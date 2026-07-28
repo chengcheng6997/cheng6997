@@ -6,913 +6,890 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="工作台">
-<meta name="theme-color" content="#2d5a2d">
-<link rel="manifest" href="manifest.json">
-<title>程佳宁 - 创作工作台</title>
+<meta name="apple-mobile-web-app-title" content="程佳宁工作台">
+<meta name="theme-color" content="#c45c3e">
+<title>程佳宁工作台</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body { width: 100%; height: 100%; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #000; overflow: hidden; user-select: none; }
-  .phone-frame { width: 100%; max-width: 420px; margin: 0 auto; height: 100vh; position: relative; background: #000; overflow: hidden; }
-
-  /* 状态栏 */
-  .status-bar { height: 44px; display: flex; justify-content: space-between; align-items: center; padding: 0 24px; padding-top: 12px; color: #fff; font-size: 15px; font-weight: 600; position: relative; z-index: 100; }
-  .status-bar .dynamic-island { position: absolute; left: 50%; top: 10px; transform: translateX(-50%); width: 120px; height: 32px; background: #000; border-radius: 20px; }
-  .status-bar .dynamic-island::after { content: ''; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 10px; height: 10px; background: #ff3b30; border-radius: 50%; }
-  .status-bar .right { display: flex; align-items: center; gap: 6px; font-size: 14px; }
-  .status-bar .time { color: #fff; }
-
-  /* 首页 Jennie 演唱会背景图 */
-  .home { position: absolute; inset: 0; z-index: 1; }
-  .bg-video { position: absolute; inset: 0; background-color: #000; background-size: cover; background-position: center top; background-repeat: no-repeat; transition: background-image 0.6s ease; }
-  .bg-video::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.05) 30%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0.65) 100%); }
-  .bg-video::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 30% 40%, rgba(255,255,255,0.05) 0%, transparent 60%); }
-  .bg-top { position: absolute; top: 50px; left: 0; right: 0; padding: 12px 16px; color: #fff; }
-  .bg-top .row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; opacity: 0.9; }
-  .bg-top .date { font-size: 13px; opacity: 0.7; }
-  .bg-inputs { position: absolute; top: 180px; left: 0; right: 0; padding: 0 16px; }
-  .bg-input { height: 64px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 16px; backdrop-filter: blur(10px); }
-  .sync-btn { position: absolute; top: 200px; right: 16px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(10px); color: #fff; padding: 8px 14px; border-radius: 20px; font-size: 12px; z-index: 3; display: flex; align-items: center; gap: 4px; }
-  .sync-btn .refresh-icon { width: 14px; height: 14px; border: 1.5px solid #fff; border-radius: 50%; border-top-color: transparent; animation: spin 2s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .side-actions { position: absolute; right: 8px; bottom: 140px; z-index: 3; display: flex; flex-direction: column; gap: 18px; align-items: center; }
-  .side-actions .avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #ffb6c1, #ffc0cb); border: 2px solid #fff; position: relative; overflow: visible; }
-  .side-actions .avatar .inner { width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg,#ffb6c1,#ffc0cb); display: flex; align-items: center; justify-content: center; font-size: 18px; }
-  .side-actions .avatar .plus { position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); width: 20px; height: 20px; background: #ff2c55; border-radius: 50%; color: #fff; font-size: 14px; display: flex; align-items: center; justify-content: center; border: 1.5px solid #fff; }
-  .action-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.4); }
-  .action-item .icon { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 28px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4)); }
-  .action-item .count { font-size: 12px; font-weight: 500; }
-  .video-overlay-info { position: absolute; bottom: 220px; left: 16px; z-index: 3; color: #fff; max-width: 60%; }
-  .video-overlay-info .likes { font-size: 12px; background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 14px; display: inline-block; backdrop-filter: blur(10px); margin-bottom: 8px; }
-  .related-search { position: absolute; bottom: 70px; left: 16px; color: #fff; font-size: 13px; z-index: 3; display: flex; align-items: center; gap: 6px; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
-  .related-search .search-icon-small { width: 16px; height: 16px; border: 1.5px solid #fff; border-radius: 50%; position: relative; }
-  .related-search .search-icon-small::after { content: ''; position: absolute; right: -4px; bottom: -3px; width: 5px; height: 1.5px; background: #fff; transform: rotate(45deg); }
-  .bottom-bar { position: absolute; bottom: 0; left: 0; right: 0; background: #000; color: #fff; padding: 12px 16px; padding-bottom: 28px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 12px; z-index: 4; }
-  .bottom-bar .comment-input { flex: 1; height: 36px; background: #1f1f1f; border-radius: 18px; display: flex; align-items: center; padding: 0 16px; font-size: 13px; color: #888; }
-  .bottom-bar .icon-btn { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px; }
-
-  /* ===== 主内容容器（覆盖在首页之上） ===== */
-  .content-page {
-    position: absolute; inset: 0; top: 0; bottom: 0; z-index: 10;
-    background: linear-gradient(180deg, #e8f3e8 0%, #f5f9f5 200px, #f5f6f8 400px, #f5f6f8 100%);
-    overflow-y: auto; -webkit-overflow-scrolling: touch;
-    display: none;
+  html, body { width: 100%; height: 100%; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #faf8f5; overflow: hidden; }
+  
+  /* 主容器 */
+  .app { width: 100%; height: 100vh; display: flex; max-width: 1200px; margin: 0 auto; background: #fff; }
+  
+  /* 左侧边栏 */
+  .sidebar {
+    width: 88px; flex-shrink: 0; background: #fff;
+    display: flex; flex-direction: column; align-items: center; padding: 24px 0 16px;
+    border-right: 1px solid #f0ebe5; z-index: 100;
   }
-  .content-page.show { display: block; }
-  .page { display: none; padding: 0 16px 80px; }
-  .page.show { display: block; animation: fadeIn 0.25s ease; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-  /* 公共日历区 */
-  .calendar-strip {
-    background: linear-gradient(135deg, #2d5a2d 0%, #3a6b3a 100%);
-    color: #fff; padding: 20px 16px 14px; border-radius: 0 0 20px 20px;
-    margin: 0 -16px 16px; box-shadow: 0 4px 12px rgba(45,90,45,0.18);
+  .sidebar .logo { width: 48px; height: 48px; border-radius: 14px; background: linear-gradient(135deg, #c45c3e, #e07a5f); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; margin-bottom: 28px; }
+  .nav-item {
+    width: 64px; display: flex; flex-direction: column; align-items: center; gap: 6px;
+    padding: 12px 4px; margin-bottom: 8px; border-radius: 16px; cursor: pointer;
+    color: #8a817c; transition: all 0.2s; font-size: 11px;
   }
-  .calendar-strip .cal-title { font-size: 13px; opacity: 0.85; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-  .calendar-strip .cal-title .month { font-size: 15px; font-weight: 600; }
-  .calendar-strip .cal-title .streak { font-size: 12px; opacity: 0.85; background: rgba(255,255,255,0.15); padding: 3px 8px; border-radius: 10px; }
-  .cal-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .nav-item .icon { font-size: 22px; }
+  .nav-item.active { background: #fdf2ef; color: #c45c3e; }
+  .nav-item:not(.active):hover { background: #f9f7f4; }
+  
+  /* 右侧主内容区 */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+  .main-scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 0 20px 40px; }
+  
+  /* 顶部标题栏 */
+  .header {
+    padding: 20px 20px 14px; background: linear-gradient(135deg, #c45c3e 0%, #d97b5d 100%);
+    color: #fff; border-radius: 0 0 24px 24px; margin-bottom: 20px;
+  }
+  .header h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .header .sub { font-size: 13px; opacity: 0.85; }
+  
+  /* 月历 */
+  .calendar-card { background: #fff; border-radius: 18px; padding: 16px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(196,92,62,0.08); }
+  .calendar-card .cal-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .calendar-card .cal-title .month { font-size: 16px; font-weight: 700; color: #3d3d3d; }
+  .calendar-card .cal-title .streak { font-size: 12px; color: #c45c3e; background: #fdf2ef; padding: 4px 10px; border-radius: 12px; }
+  .cal-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
+  .cal-week .weekday { font-size: 11px; color: #b0a8a3; margin-bottom: 4px; }
   .cal-day {
-    aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    font-size: 12px; border-radius: 8px; background: rgba(255,255,255,0.08); position: relative;
+    aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 10px;
+    font-size: 13px; color: #5c5c5c; background: #f9f7f4; cursor: pointer; position: relative;
   }
-  .cal-day .num { font-weight: 500; }
-  .cal-day .dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(255,255,255,0.4); margin-top: 3px; }
-  .cal-day.has-mark .dot { background: #7ee07e; box-shadow: 0 0 4px #7ee07e; }
-  .cal-day.today { background: rgba(255,255,255,0.95); color: #2d5a2d; }
-  .cal-day.today .num { font-weight: 700; }
-  .cal-day.today .dot { background: #2d5a2d; }
+  .cal-day.today { background: #c45c3e; color: #fff; font-weight: 700; }
+  .cal-day.has-mark::after { content: ''; position: absolute; bottom: 4px; width: 4px; height: 4px; border-radius: 50%; background: #c45c3e; }
+  .cal-day.today.has-mark::after { background: #fff; }
   .cal-day.other-month { opacity: 0.3; }
-
-  /* 返回按钮（改为弹出侧边栏） */
-  .page-back {
-    position: fixed; top: 12px; left: 12px; z-index: 60;
-    width: 36px; height: 36px; border-radius: 10px;
-    background: rgba(255,255,255,0.2); color: #fff; font-size: 18px;
-    display: none; align-items: center; justify-content: center;
-    backdrop-filter: blur(10px); cursor: pointer;
+  
+  /* 模块内容 */
+  .section { display: none; animation: fadeIn 0.25s ease; }
+  .section.show { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  
+  .sec-title { font-size: 18px; font-weight: 700; color: #3d3d3d; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  
+  /* 卡片 */
+  .card { background: #fff; border-radius: 18px; padding: 18px; margin-bottom: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+  .card-title { font-size: 15px; font-weight: 700; color: #3d3d3d; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+  
+  /* 打卡按钮 */
+  .check-btn {
+    display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px;
+    background: #fdf2ef; color: #c45c3e; border-radius: 24px; font-size: 14px; font-weight: 600;
+    cursor: pointer; border: 1px solid #fae0d8; transition: all 0.2s;
   }
-  .page-back.show { display: flex; }
-  .page-title {
-    position: fixed; top: 18px; left: 56px; right: 16px; z-index: 55;
-    color: #fff; font-size: 16px; font-weight: 600; display: none;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  .check-btn.checked { background: #c45c3e; color: #fff; }
+  
+  /* 文本记录 */
+  .note-area { width: 100%; min-height: 80px; border: 1px solid #ede8e2; border-radius: 12px; padding: 12px; font-size: 14px; line-height: 1.6; color: #4a4a4a; resize: vertical; margin-top: 12px; font-family: inherit; }
+  .note-area:focus { outline: none; border-color: #c45c3e; }
+  .save-hint { font-size: 12px; color: #9e9a95; margin-top: 8px; text-align: right; }
+  
+  /* 子标签 */
+  .sub-tabs { display: flex; gap: 10px; margin-bottom: 16px; }
+  .sub-tab { padding: 8px 16px; border-radius: 20px; background: #f5f2ee; color: #8a817c; font-size: 13px; cursor: pointer; transition: all 0.2s; }
+  .sub-tab.active { background: #c45c3e; color: #fff; }
+  
+  /* 视频卡片 */
+  .video-card { background: #fff; border-radius: 18px; padding: 16px; margin-bottom: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); cursor: pointer; }
+  .video-card .vc-header { display: flex; gap: 12px; align-items: flex-start; }
+  .video-card .vc-thumb { width: 100px; height: 70px; border-radius: 10px; background: #f0ebe5; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 28px; }
+  .video-card .vc-info { flex: 1; }
+  .video-card .vc-title { font-size: 14px; font-weight: 600; color: #3d3d3d; margin-bottom: 6px; line-height: 1.4; }
+  .video-card .vc-meta { font-size: 12px; color: #9e9a95; }
+  .video-card .vc-body { display: none; margin-top: 14px; padding-top: 14px; border-top: 1px solid #f5f2ee; }
+  .video-card.expanded .vc-body { display: block; animation: fadeIn 0.2s ease; }
+  .video-card .vc-actions { display: flex; gap: 10px; margin-top: 12px; }
+  .video-card .vc-btn { flex: 1; padding: 10px; border-radius: 10px; text-align: center; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; }
+  .video-card .vc-btn.primary { background: #c45c3e; color: #fff; border: none; }
+  .video-card .vc-btn.secondary { background: #f5f2ee; color: #5c5c5c; border: 1px solid #ede8e2; }
+  .bili-player { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; background: #000; }
+  .bili-player iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+  .bili-tip { font-size: 12px; color: #9e9a95; margin-top: 10px; line-height: 1.5; }
+  
+  /* 菜谱 */
+  .meal-actions { display: flex; gap: 10px; margin-bottom: 16px; }
+  .meal-actions button { flex: 1; padding: 12px; border-radius: 12px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .meal-actions .gen { background: #c45c3e; color: #fff; }
+  .meal-actions .refresh { background: #f5f2ee; color: #5c5c5c; }
+  .meal-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .meal-card { background: #fff; border-radius: 18px; padding: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
+  .meal-card:hover { border-color: #fae0d8; }
+  .meal-card.selected { border-color: #c45c3e; background: #fdf8f6; }
+  .meal-card .meal-name { font-size: 14px; font-weight: 700; color: #3d3d3d; margin-bottom: 10px; }
+  .meal-card .meal-item { font-size: 12px; color: #5c5c5c; padding: 6px 0; border-bottom: 1px dashed #f0ebe5; }
+  .meal-card .meal-item:last-child { border-bottom: none; }
+  .meal-card .meal-item .label { color: #c45c3e; font-weight: 600; margin-right: 4px; }
+  .meal-card .meal-cal { font-size: 11px; color: #9e9a95; margin-top: 10px; }
+  
+  /* 统计小卡片 */
+  .stat-row { display: flex; gap: 12px; margin-bottom: 20px; }
+  .stat-card { flex: 1; background: #fff; border-radius: 16px; padding: 14px; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+  .stat-card .num { font-size: 24px; font-weight: 700; color: #c45c3e; }
+  .stat-card .label { font-size: 12px; color: #9e9a95; margin-top: 4px; }
+  
+  /* 移动端侧边栏折叠按钮 - 右侧垂直居中 */
+  .menu-toggle { display: none; position: fixed; right: 0; top: 50%; transform: translateY(-50%); width: 44px; height: 64px; border-radius: 12px 0 0 12px; background: #c45c3e; color: #fff; font-size: 20px; align-items: center; justify-content: center; box-shadow: -2px 2px 12px rgba(196,92,62,0.3); z-index: 200; cursor: pointer; }
+  
+  /* 日历日期可点击 */
+  .cal-day.clickable { cursor: pointer; }
+  .cal-day.clickable:hover { background: #fdf2ef; }
+  .cal-day.future { cursor: not-allowed; opacity: 0.4; }
+  
+  /* 日期编辑弹窗 */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 500;
+    display: none; align-items: center; justify-content: center; padding: 16px;
+    animation: fadeIn 0.2s ease;
   }
-  .page-title.show { display: block; }
-
-  /* 侧边栏 */
-  .sidebar { position: absolute; top: 0; left: 0; bottom: 0; width: 78%; max-width: 320px; background: #fff; z-index: 50; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1); display: flex; flex-direction: column; box-shadow: 4px 0 20px rgba(0,0,0,0.3); }
-  .sidebar.open { transform: translateX(0); }
-  .sidebar-header { padding: 50px 20px 16px; background: #fff; }
-  .sidebar-header .top-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-  .back-arrow { font-size: 22px; color: #333; cursor: pointer; padding: 4px; margin-left: -8px; font-weight: 300; }
-  .title-area { flex: 1; }
-  .title-area .name { font-size: 18px; font-weight: 700; color: #1a1a1a; display: inline-block; }
-  .title-area .subtitle-inline { display: inline-block; color: #999; font-size: 15px; margin-left: 4px; font-weight: 400; }
-  .search-btn { color: #333; font-size: 15px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 4px; }
-  .search-btn .icon { width: 18px; height: 18px; border: 1.5px solid #333; border-radius: 50%; position: relative; }
-  .search-btn .icon::after { content: ''; position: absolute; right: -4px; bottom: -3px; width: 6px; height: 1.5px; background: #333; transform: rotate(45deg); }
-  .sidebar-header .label { font-size: 13px; color: #888; }
-  .menu-list { flex: 1; padding: 16px 0; overflow-y: auto; }
-  .menu-item { display: flex; align-items: center; padding: 16px 20px; margin: 0 12px 12px; border-radius: 16px; cursor: pointer; transition: all 0.2s; font-size: 16px; color: #1a1a1a; font-weight: 500; background: transparent; }
-  .menu-item.active { background: #2d5a2d; color: #fff; box-shadow: 0 4px 12px rgba(45, 90, 45, 0.3); }
-  .menu-item:not(.active):hover { background: #f5f5f5; }
-  .menu-item .emoji { font-size: 22px; margin-right: 14px; }
-  .overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.45); z-index: 40; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
-  .overlay.show { opacity: 1; pointer-events: auto; }
-  .open-trigger { position: fixed; right: 20px; top: 60px; z-index: 200; background: rgba(0,0,0,0.6); color: #fff; padding: 8px 14px; border-radius: 20px; font-size: 13px; cursor: pointer; backdrop-filter: blur(10px); }
-  ::-webkit-scrollbar { display: none; }
-
-  /* ===== 公共卡片样式 ===== */
-  .card { background: #fff; border-radius: 14px; padding: 16px; margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-  .card h3 { font-size: 15px; color: #1a1a1a; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
-  .card h3 .badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: #eef5ee; color: #2d5a2d; font-weight: 500; }
-  .card h3 .badge.fixed { background: #fff3e0; color: #b07000; }
-
-  /* 圆圈打卡组件 */
-  .check-circle {
-    width: 24px; height: 24px; border-radius: 50%;
-    border: 2px solid #ccc; cursor: pointer; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    color: transparent; transition: all 0.2s;
-    font-size: 14px; font-weight: 700;
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: #fff; border-radius: 20px; width: 100%; max-width: 380px;
+    max-height: 90vh; overflow-y: auto; padding: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
   }
-  .check-circle.checked { background: #2d5a2d; border-color: #2d5a2d; color: #fff; }
-  .check-circle.big { width: 64px; height: 64px; font-size: 32px; border-width: 3px; }
-
-  /* 大打卡行 */
-  .big-check-row {
-    display: flex; align-items: center; gap: 16px;
-    padding: 20px 16px; background: #fff; border-radius: 14px;
-    margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #f0ebe5; }
+  .modal-header .m-title { font-size: 17px; font-weight: 700; color: #3d3d3d; }
+  .modal-header .m-close { width: 32px; height: 32px; border-radius: 50%; background: #f5f2ee; color: #8a817c; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; }
+  .modal-section { margin-bottom: 16px; }
+  .modal-section .ms-label { font-size: 13px; font-weight: 600; color: #5c5c5c; margin-bottom: 8px; }
+  .modal-checks { display: flex; gap: 8px; flex-wrap: wrap; }
+  .modal-check {
+    display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px;
+    background: #f5f2ee; color: #8a817c; border-radius: 20px; font-size: 12px;
+    cursor: pointer; transition: all 0.2s; border: 1px solid transparent;
   }
-  .big-check-row .info { flex: 1; }
-  .big-check-row .info .main { font-size: 16px; font-weight: 600; color: #1a1a1a; }
-  .big-check-row .info .sub { font-size: 12px; color: #888; margin-top: 4px; }
-
-  /* 饮水时段 */
-  .water-times { display: flex; flex-wrap: wrap; gap: 8px; }
-  .water-time {
-    display: flex; flex-direction: column; align-items: center;
-    padding: 10px 12px; background: #f7f9f7; border-radius: 10px;
-    min-width: 64px; cursor: pointer; transition: all 0.2s;
-    border: 1.5px solid transparent;
+  .modal-check.checked { background: #fdf2ef; color: #c45c3e; border-color: #fae0d8; }
+  .modal-note { width: 100%; min-height: 60px; border: 1px solid #ede8e2; border-radius: 10px; padding: 10px; font-size: 13px; line-height: 1.5; resize: vertical; font-family: inherit; color: #4a4a4a; }
+  .modal-note:focus { outline: none; border-color: #c45c3e; }
+  .modal-footer { display: flex; gap: 10px; margin-top: 20px; }
+  .modal-btn { flex: 1; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
+  .modal-btn.save { background: #c45c3e; color: #fff; }
+  .modal-btn.cancel { background: #f5f2ee; color: #5c5c5c; }
+  
+  @media (max-width: 640px) {
+    .sidebar { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); transition: transform 0.3s; width: 100px; }
+    .sidebar.open { transform: translateX(0); }
+    .menu-toggle { display: flex; }
+    .main { width: 100%; }
   }
-  .water-time .t { font-size: 14px; font-weight: 600; color: #1a1a1a; }
-  .water-time .ml { font-size: 11px; color: #888; margin-top: 2px; }
-  .water-time .done-mark { width: 18px; height: 18px; border-radius: 50%; margin-top: 6px; border: 1.5px solid #ccc; display: flex; align-items: center; justify-content: center; font-size: 11px; color: transparent; }
-  .water-time.done { background: #eef5ee; border-color: #2d5a2d; }
-  .water-time.done .done-mark { background: #2d5a2d; border-color: #2d5a2d; color: #fff; }
-
-  .water-progress { margin-top: 14px; }
-  .water-progress .label-row { display: flex; justify-content: space-between; font-size: 12px; color: #666; margin-bottom: 6px; }
-  .water-progress .bar { height: 8px; background: #eee; border-radius: 4px; overflow: hidden; }
-  .water-progress .fill { height: 100%; background: linear-gradient(90deg, #4caf50, #2d5a2d); border-radius: 4px; transition: width 0.3s; }
-  .water-hint { margin-top: 10px; font-size: 12px; color: #b07000; background: #fff8e1; padding: 8px 10px; border-radius: 8px; }
-
-  /* 任务列表 */
-  .task-list .task-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
-  .task-item:last-child { border-bottom: none; }
-  .task-item .text { flex: 1; font-size: 14px; color: #333; }
-  .task-item.done .text { text-decoration: line-through; color: #aaa; }
-  .task-item .del { color: #f44336; font-size: 18px; cursor: pointer; opacity: 0; transition: opacity 0.2s; }
-  .task-item:hover .del { opacity: 1; }
-  .add-task-row { display: flex; gap: 8px; margin-top: 10px; }
-  .add-task-row input { flex: 1; height: 36px; padding: 0 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
-  .add-task-row button { background: #2d5a2d; color: #fff; border: none; padding: 0 14px; border-radius: 8px; font-size: 14px; cursor: pointer; }
-
-  /* 选题表格 */
-  .insp-meta { font-size: 12px; color: #666; line-height: 1.6; margin-bottom: 12px; }
-  .insp-meta b { color: #1a1a1a; }
-  .insp-table-wrap { overflow-x: auto; margin: 0 -16px; padding: 0 16px; }
-  .insp-table { width: 100%; min-width: 640px; border-collapse: separate; border-spacing: 0; font-size: 12px; }
-  .insp-table th { background: #2d5a2d; color: #fff; padding: 10px 8px; text-align: left; font-weight: 500; position: sticky; top: 0; }
-  .insp-table th:first-child, .insp-table td:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
-  .insp-table th:last-child, .insp-table td:last-child { border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
-  .insp-table tr { background: #fff; }
-  .insp-table tr:nth-child(even) { background: #fafafa; }
-  .insp-table td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
-  .insp-table td.title { max-width: 160px; }
-  .insp-table td.link a { color: #2d5a2d; text-decoration: none; word-break: break-all; }
-  .insp-table .platform { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 11px; color: #fff; }
-  .insp-table .platform.dy { background: #000; }
-  .insp-table .platform.xhs { background: #ff2442; }
-  .insp-table tr.clickable { cursor: pointer; }
-  .insp-table tr.clickable:hover { background: #f0f7f0; }
-  .insp-row-detail td { background: #f9fbf9; padding: 12px; }
-  .insp-row-detail .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .insp-row-detail .detail-item .k { font-size: 11px; color: #888; }
-  .insp-row-detail .detail-item .v { font-size: 12px; color: #333; margin-top: 2px; }
-
-  .recommend-cards { margin-top: 16px; }
-  .recommend-cards h4 { font-size: 14px; color: #1a1a1a; margin-bottom: 10px; }
-  .rec-card { background: #fff; border-left: 3px solid #ff9800; border-radius: 8px; padding: 12px; margin-bottom: 10px; }
-  .rec-card .title { font-size: 13px; font-weight: 600; color: #1a1a1a; margin-bottom: 6px; }
-  .rec-card .reason { font-size: 12px; color: #666; line-height: 1.5; }
-
-  .refresh-btn { width: 100%; padding: 10px; background: #2d5a2d; color: #fff; border: none; border-radius: 10px; font-size: 14px; margin-bottom: 12px; cursor: pointer; }
-
-  /* 健身动作 */
-  .exercise-section { margin-bottom: 16px; }
-  .exercise-section .sec-title { font-size: 13px; color: #888; margin-bottom: 8px; display: flex; justify-content: space-between; }
-  .exercise-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: #fff; border-radius: 10px; margin-bottom: 8px; }
-  .exercise-item .num { width: 24px; height: 24px; border-radius: 50%; background: #f0f0f0; color: #888; font-size: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .exercise-item.done .num { background: #2d5a2d; color: #fff; }
-  .exercise-item .ex-name { flex: 1; font-size: 14px; color: #1a1a1a; }
-  .exercise-item .ex-reps { font-size: 12px; color: #888; }
-  .exercise-item.done .ex-name { color: #888; }
-
-  .one-click-btn { width: 100%; padding: 12px; background: #2d5a2d; color: #fff; border: none; border-radius: 10px; font-size: 14px; margin-top: 10px; cursor: pointer; }
-
-  /* 多邻国 */
-  .lang-selector { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-  .lang-pill { padding: 8px 14px; background: #fff; border-radius: 16px; font-size: 13px; color: #666; cursor: pointer; border: 1.5px solid #eee; }
-  .lang-pill.active { background: #2d5a2d; color: #fff; border-color: #2d5a2d; }
-  .tip-list .tip-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; color: #333; }
-  .tip-list .tip-item:last-child { border-bottom: none; }
-  .tip-list .tip-item .n { color: #2d5a2d; font-weight: 600; }
-
+  
+  ::-webkit-scrollbar { width: 0; display: none; }
+  
+  /* 月度汇总页 */
+  .summary-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+  .summary-stat-card { background: #fff; border-radius: 16px; padding: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+  .summary-stat-card .ss-icon { font-size: 24px; margin-bottom: 8px; }
+  .summary-stat-card .ss-num { font-size: 28px; font-weight: 700; color: #c45c3e; }
+  .summary-stat-card .ss-label { font-size: 12px; color: #9e9a95; margin-top: 4px; }
+  .summary-stat-card .ss-rate { font-size: 11px; color: #5c5c5c; margin-top: 6px; }
+  .summary-stat-card .ss-rate .bar { height: 4px; background: #f5f2ee; border-radius: 2px; overflow: hidden; margin-top: 4px; }
+  .summary-stat-card .ss-rate .fill { height: 100%; background: #c45c3e; border-radius: 2px; }
+  
+  .month-heatmap { background: #fff; border-radius: 18px; padding: 18px; margin-bottom: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+  .month-heatmap .mh-title { font-size: 15px; font-weight: 700; color: #3d3d3d; margin-bottom: 14px; }
+  .heatmap-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .heatmap-cell { aspect-ratio: 1; border-radius: 6px; background: #f5f2ee; font-size: 10px; display: flex; align-items: center; justify-content: center; color: #b0a8a3; }
+  .heatmap-cell.l1 { background: #fae0d8; }
+  .heatmap-cell.l2 { background: #f0b09a; }
+  .heatmap-cell.l3 { background: #d97b5d; color: #fff; }
+  .heatmap-cell.l4 { background: #c45c3e; color: #fff; }
+  .heatmap-cell.today { border: 2px solid #3d3d3d; }
+  .heatmap-legend { display: flex; align-items: center; gap: 6px; margin-top: 12px; font-size: 11px; color: #9e9a95; }
+  .heatmap-legend .swatch { width: 12px; height: 12px; border-radius: 3px; }
+  
+  .recent-list { background: #fff; border-radius: 18px; padding: 18px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+  .recent-list .rl-title { font-size: 15px; font-weight: 700; color: #3d3d3d; margin-bottom: 14px; }
+  .recent-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f5f2ee; font-size: 13px; }
+  .recent-item:last-child { border-bottom: none; }
+  .recent-item .ri-date { width: 36px; height: 36px; border-radius: 10px; background: #fdf2ef; color: #c45c3e; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+  .recent-item .ri-date .d { font-size: 14px; font-weight: 700; }
+  .recent-item .ri-content { flex: 1; color: #5c5c5c; }
+  .recent-item .ri-content .tags { display: flex; gap: 4px; margin-top: 4px; }
+  .recent-item .ri-content .tag { font-size: 10px; padding: 2px 6px; border-radius: 8px; background: #f5f2ee; color: #8a817c; }
+  .recent-item .ri-content .tag.done { background: #fdf2ef; color: #c45c3e; }
 </style>
 </head>
 <body>
-<div class="phone-frame" id="phoneFrame">
-
-  <!-- 状态栏（已隐藏） -->
-  <div class="status-bar" id="statusBar" style="display:none;">
-    <div class="time" id="statusTime">22:42</div>
-    <div class="dynamic-island"></div>
-    <div class="right"></div>
-  </div>
-
-  <!-- 首页 Jennie 演唱会背景图 -->
-  <div class="home" id="homePage">
-    <div class="bg-video" id="bgVideo"></div>
-    <div class="bg-top">
-      <div class="row"><div style="font-weight:600;">程佳宁 的创作工作台</div></div>
-      <div class="row" style="margin-top:8px;"><div class="date" id="homeDate">2026年7月21日 星期一</div></div>
-    </div>
-    <div class="sync-btn"><div class="refresh-icon"></div><span>同步到手机</span></div>
-    <div class="bg-inputs"><div class="bg-input"></div><div class="bg-input"></div></div>
-    <div class="video-overlay-info">
-      <div class="likes">🎤 Jennie 演唱会造型</div>
-      <div style="font-size:14px;font-weight:600;margin:6px 0;">@BLACKPINK · Coachella 2023</div>
-      <div class="user-desc">Jennie 在 Coachella 主舞台的 iconic 造型，粉色战袍+镂空设计，又甜又辣 ⌄</div>
-      <div class="disclaimer">ⓘ 图片来源：Wikimedia Commons</div>
-    </div>
-    <div class="side-actions">
-      <div class="avatar"><div class="inner">👧</div><div class="plus">+</div></div>
-      <div class="action-item"><div class="icon">❤️</div><div class="count">12.3万</div></div>
-      <div class="action-item"><div class="icon">💬</div><div class="count">2152</div></div>
-      <div class="action-item"><div class="icon">⭐</div><div class="count">6.2万</div></div>
-      <div class="action-item"><div class="icon">↗️</div><div class="count">3.8万</div></div>
-    </div>
-    <div class="related-search">
-      <div class="search-icon-small"></div>
-      <span>相关搜索 · workbuddy手机版</span>
-    </div>
-    <div class="bottom-bar">
-      <div class="comment-input">有什么想法，展开说说</div>
-      <div class="icon-btn">🖼️</div>
-      <div class="icon-btn">@</div>
-      <div class="icon-btn">😊</div>
-    </div>
-  </div>
-
-  <!-- 返回按钮与标题 -->
-  <div class="page-back" id="pageBack" onclick="backToSidebar()">☰</div>
-  <div class="page-title" id="pageTitle"></div>
-
-  <!-- 主内容容器 -->
-  <div class="content-page" id="contentPage">
-
-    <!-- 每日计划 -->
-    <section class="page" id="page-daily-plan">
-      <div class="calendar-strip" id="cal-daily-plan"></div>
-      <!-- 饮水提醒 -->
-      <div class="card">
-        <h3>💧 定时饮水提醒 <span class="badge fixed">固定</span></h3>
-        <div class="water-times" id="waterTimes"></div>
-        <div class="water-progress">
-          <div class="label-row"><span>今日已完成</span><span id="waterMl">0 / 1500 ml</span></div>
-          <div class="bar"><div class="fill" id="waterFill" style="width:0%"></div></div>
-        </div>
-        <div class="water-hint">☕ 咖啡后请追加补水 200ml</div>
-      </div>
-
-      <!-- 高优先级 -->
-      <div class="card">
-        <h3>🔥 高优先级任务 <span class="badge">可编辑</span></h3>
-        <div class="task-list" id="taskHigh"></div>
-        <div class="add-task-row">
-          <input type="text" id="newTaskHigh" placeholder="+ 添加任务">
-          <button onclick="addTask('high')">添加</button>
-        </div>
-      </div>
-
-      <!-- 常规任务 -->
-      <div class="card">
-        <h3>📋 常规工作任务 <span class="badge">可编辑</span></h3>
-        <div class="task-list" id="taskNormal"></div>
-        <div class="add-task-row">
-          <input type="text" id="newTaskNormal" placeholder="+ 添加任务">
-          <button onclick="addTask('normal')">添加</button>
-        </div>
-      </div>
-
-      <!-- 弹性事项 -->
-      <div class="card">
-        <h3>🎯 弹性空余事项 <span class="badge">可编辑</span></h3>
-        <div class="task-list" id="taskFree"></div>
-        <div class="add-task-row">
-          <input type="text" id="newTaskFree" placeholder="+ 添加任务">
-          <button onclick="addTask('free')">添加</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- 选题灵感 -->
-    <section class="page" id="page-topic-inspiration">
-      <div class="calendar-strip" id="cal-topic-inspiration"></div>
-      <div class="card">
-        <h3>💡 选题每日灵感</h3>
-        <div class="insp-meta">
-          <b>来源：</b>抖音、小红书近 24h 内容<br>
-          <b>筛选：</b>抖音点赞≥10w / 小红书点赞≥2w<br>
-          <b>赛道：</b>工厂源头带货
-        </div>
-        <button class="refresh-btn" onclick="refreshInspiration()">🔄 刷新热点（示例数据）</button>
-        <div class="insp-table-wrap">
-          <table class="insp-table" id="inspTable">
-            <thead>
-              <tr>
-                <th>平台</th><th>标题</th><th>点赞</th><th>收藏</th><th>转发</th><th>爆点</th><th>适配品类</th><th>原链接</th>
-              </tr>
-            </thead>
-            <tbody id="inspBody"></tbody>
-          </table>
-        </div>
-      </div>
-      <div class="recommend-cards" id="recommendCards"></div>
-    </section>
-
-    <!-- 每日健身 -->
-    <section class="page" id="page-violin">
-      <div class="calendar-strip" id="cal-violin"></div>
-      <div class="big-check-row">
-        <div class="check-circle big" id="fitnessCircle" onclick="toggleFitness()"></div>
-        <div class="info">
-          <div class="main">完成30分钟每日健身</div>
-          <div class="sub">热身5min + 训练20min + 拉伸5min</div>
-        </div>
-      </div>
-      <button class="one-click-btn" onclick="oneClickFitness()">一键完成今日健身</button>
-
-      <div class="card">
-        <div class="exercise-section">
-          <div class="sec-title"><span>热身 · 5min</span></div>
-          <div id="warmupList"></div>
-        </div>
-        <div class="exercise-section">
-          <div class="sec-title"><span>训练 · 20min（居家无器械，针对久坐肩颈腰背）</span></div>
-          <div id="mainList"></div>
-        </div>
-        <div class="exercise-section">
-          <div class="sec-title"><span>拉伸 · 5min</span></div>
-          <div id="stretchList"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 多邻国 -->
-    <section class="page" id="page-english">
-      <div class="calendar-strip" id="cal-english"></div>
-      <div class="big-check-row">
-        <div class="check-circle big" id="duolingoCircle" onclick="toggleDuolingo()"></div>
-        <div class="info">
-          <div class="main">完成今日多邻国语言学习打卡</div>
-          <div class="sub" id="duolingoSub">点击下方按钮一键完成</div>
-        </div>
-      </div>
-      <button class="one-click-btn" onclick="oneClickDuolingo()">一键完成今日打卡</button>
-
-      <div class="card">
-        <h3>📚 今日语种</h3>
-        <div class="lang-selector" id="langSelector"></div>
-      </div>
-
-      <div class="card">
-        <h3>✨ 碎片化学习建议</h3>
-        <div class="tip-list" id="tipList"></div>
-      </div>
-    </section>
-
-  </div>
-
-  <!-- 遮罩与侧边栏 -->
-  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+<div class="app">
+  <!-- 左侧边栏 -->
   <div class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-      <div class="top-row">
-        <span class="back-arrow" onclick="closeSidebar()">‹</span>
-        <div class="title-area">
-          <span class="name">程佳宁</span>
-          <span class="subtitle-inline">搜你想看的</span>
+    <div class="logo" onclick="switchSection('summary')" style="cursor:pointer;">程</div>
+    <div class="nav-item active" data-section="fitness"><span class="icon">💪</span><span>强身健体</span></div>
+    <div class="nav-item" data-section="edit"><span class="icon">🎬</span><span>剪辑课程</span></div>
+    <div class="nav-item" data-section="japanese"><span class="icon">🎧</span><span>日语听力</span></div>
+    <div class="nav-item" data-section="meal"><span class="icon">🥗</span><span>三餐建议</span></div>
+    <div class="nav-item" data-section="read"><span class="icon">📖</span><span>每日阅读</span></div>
+  </div>
+  
+  <!-- 右侧主内容 -->
+  <div class="main">
+    <div class="main-scroll">
+      <!-- 顶部头部 -->
+      <div class="header">
+        <h1 id="pageTitle">程佳宁工作台</h1>
+        <div class="sub" id="pageDate">2026年7月28日 星期二</div>
+      </div>
+      
+      <!-- 公共月历 -->
+      <div class="calendar-card" id="calendarCard"></div>
+      
+      <!-- 月度汇总页（点"程"图标显示） -->
+      <div class="section" id="sec-summary">
+        <div class="summary-stats" id="summaryStats"></div>
+        <div class="month-heatmap">
+          <div class="mh-title">本月打卡热力图</div>
+          <div class="heatmap-grid" id="heatmapGrid"></div>
+          <div class="heatmap-legend">
+            <span>少</span>
+            <div class="swatch" style="background:#f5f2ee"></div>
+            <div class="swatch" style="background:#fae0d8"></div>
+            <div class="swatch" style="background:#f0b09a"></div>
+            <div class="swatch" style="background:#d97b5d"></div>
+            <div class="swatch" style="background:#c45c3e"></div>
+            <span>多</span>
+          </div>
         </div>
-        <div class="search-btn" style="margin-right:-4px;">
-          <div class="icon"></div><span>搜索</span>
+        <div class="recent-list">
+          <div class="rl-title">最近记录</div>
+          <div id="recentList"></div>
         </div>
       </div>
-      <div class="label">创作工作台</div>
+      
+      <!-- 强身健体 -->
+      <div class="section show" id="sec-fitness">
+        <div class="stat-row">
+          <div class="stat-card"><div class="num" id="fitnessTotal">0</div><div class="label">本月运动</div></div>
+          <div class="stat-card"><div class="num" id="fitnessStreak">0</div><div class="label">连续打卡</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">今日运动打卡</div>
+          <div class="check-btn" id="fitnessCheck" onclick="toggleCheck('fitness')">○ 今日未打卡</div>
+        </div>
+        <div class="card">
+          <div class="card-title">运动内容记录</div>
+          <textarea class="note-area" id="fitnessNote" placeholder="今天做了什么运动？用了多久？感受如何？"></textarea>
+          <div class="save-hint">自动保存</div>
+        </div>
+      </div>
+      
+      <!-- 剪辑课程 -->
+      <div class="section" id="sec-edit">
+        <div class="card">
+          <div class="card-title">今日课程打卡</div>
+          <div class="check-btn" id="editCheck" onclick="toggleCheck('edit')">○ 今日未打卡</div>
+        </div>
+        <div class="card">
+          <div class="card-title">学习内容记录</div>
+          <textarea class="note-area" id="editNote" placeholder="今天学了哪些剪辑技巧？有什么收获？"></textarea>
+          <div class="save-hint">自动保存</div>
+        </div>
+      </div>
+      
+      <!-- 日语听力 -->
+      <div class="section" id="sec-japanese">
+        <div class="sub-tabs">
+          <div class="sub-tab active" data-tab="variety" onclick="switchSubTab('variety')">日语综艺</div>
+          <div class="sub-tab" data-tab="nhk" onclick="switchSubTab('nhk')">NHK新闻</div>
+        </div>
+        <div class="sub-content show" id="tab-variety"></div>
+        <div class="sub-content" id="tab-nhk"></div>
+      </div>
+      
+      <!-- 三餐建议 -->
+      <div class="section" id="sec-meal">
+        <div class="meal-actions">
+          <button class="gen" onclick="generateMeals()">🎲 生成两份菜谱</button>
+          <button class="refresh" onclick="generateMeals()">换一换</button>
+        </div>
+        <div id="mealLoading" style="display:none; text-align:center; padding:20px; color:#9e9a95; font-size:14px;">正在生成中...</div>
+        <div class="meal-grid" id="mealGrid"></div>
+        <div id="mealSelected" style="margin-top:16px; padding:14px; background:#fdf2ef; border-radius:12px; color:#c45c3e; font-size:13px; display:none;"></div>
+      </div>
+      
+      <!-- 每日阅读 -->
+      <div class="section" id="sec-read">
+        <div class="card">
+          <div class="card-title">今日阅读打卡</div>
+          <div class="check-btn" id="readCheck" onclick="toggleCheck('read')">○ 今日未打卡</div>
+        </div>
+        <div class="card">
+          <div class="card-title">阅读内容与心得</div>
+          <textarea class="note-area" id="readNote" placeholder="今天读了什么？有什么心得和启发？"></textarea>
+          <div class="save-hint">自动保存</div>
+        </div>
+      </div>
+      
     </div>
-    <div class="menu-list">
-      <div class="menu-item" data-page="daily-plan"><span class="emoji">📋</span><span>每日计划</span></div>
-      <div class="menu-item" data-page="topic-inspiration"><span class="emoji">💡</span><span>选题每日灵感</span></div>
-      <div class="menu-item" data-page="violin"><span class="emoji">💪</span><span>每日健身</span></div>
-      <div class="menu-item" data-page="english"><span class="emoji">🦉</span><span>多邻国</span></div>
+  </div>
+  
+  <!-- 移动端菜单按钮 -->
+  <div class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">☰</div>
+</div>
+
+<!-- 日期编辑弹窗 -->
+<div class="modal-overlay" id="dayModal" onclick="if(event.target===this)closeDayModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="m-title" id="modalDate">日期</div>
+      <div class="m-close" onclick="closeDayModal()">×</div>
+    </div>
+    <div class="modal-section">
+      <div class="ms-label">当日打卡状态</div>
+      <div class="modal-checks" id="modalChecks"></div>
+    </div>
+    <div class="modal-section">
+      <div class="ms-label">运动内容记录</div>
+      <textarea class="modal-note" id="modalFitnessNote" placeholder="当天运动内容..."></textarea>
+    </div>
+    <div class="modal-section">
+      <div class="ms-label">剪辑课程记录</div>
+      <textarea class="modal-note" id="modalEditNote" placeholder="当天学习内容..."></textarea>
+    </div>
+    <div class="modal-section">
+      <div class="ms-label">阅读心得</div>
+      <textarea class="modal-note" id="modalReadNote" placeholder="当天阅读心得..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn cancel" onclick="closeDayModal()">取消</button>
+      <button class="modal-btn save" onclick="saveDayModal()">保存</button>
     </div>
   </div>
 </div>
 
-<!-- 浮动触发按钮：始终显示，关闭侧边栏后可再次唤出 -->
-<div class="open-trigger" id="openTrigger" onclick="openSidebar()">☰ 工作台</div>
-
 <script>
-// ============ 时间与日期 ============
-function updateTime() {
+// ============ 数据与状态 ============
+const LS_PREFIX = 'cheng_v2_';
+const SECTIONS = ['fitness', 'edit', 'japanese', 'meal', 'read'];
+let currentSection = 'fitness';
+let currentSubTab = 'variety';
+
+// 预置 B 站视频（示例 BV 号）
+const BILI_VIDEOS = {
+  variety: [
+    { title: '【月曜夜未央】经典爆笑街头采访合集', bvid: 'BV1GJ411x7h7', tag: '综艺', desc: '适合练习日常口语和听力，语速适中。' },
+    { title: '【交给岚吧】嘉宾访谈精选片段', bvid: 'BV1X7411x7mE', tag: '综艺', desc: '轻松有趣的对话场景，适合碎片时间。' },
+    { title: '【Another Sky】声优/艺人专访合集', bvid: 'BV1K4411y7gQ', tag: '综艺', desc: '偏访谈类，用词较正式。' },
+    { title: '【林先生が驚く初耳学】知识类综艺', bvid: 'BV1aE411t7Dx', tag: '综艺', desc: '有知识讲解，适合提升词汇量。' }
+  ],
+  nhk: [
+    { title: 'NHK新闻简讯 日语听力练习', bvid: 'BV1cJ411x7Xy', tag: '新闻', desc: '标准新闻播报语速，适合精听。' },
+    { title: 'NHK World Japan 日语新闻精选', bvid: 'BV1D7411R7nT', tag: '新闻', desc: '带国际视角的新闻，词汇较正式。' },
+    { title: 'NHK 7点新闻 听力跟读素材', bvid: 'BV1nE411t7hM', tag: '新闻', desc: '每日新闻类素材，适合长期坚持。' },
+    { title: 'NHK纪录片片段 日语原声', bvid: 'BV1m4411y7kX', tag: '纪录片', desc: '旁白清晰，适合提升听力语感。' }
+  ]
+};
+
+// 中文减脂餐菜谱库（参考小红书博主：橙橙爱做饭、肉肉的减脂餐、阿雀的轻食日记风格）
+// 家常食材、做法简便、控卡不挨饿
+const MEAL_LIBRARY = [
+  // 周一风格
+  { name: '清爽减脂日 · 家常版', cal: '约 1450 kcal', tag: '清爽·低卡',
+    breakfast: '玉米半根 + 水煮蛋 1 个 + 凉拌黄瓜', 
+    lunch: '香煎鸡胸肉 + 糙米饭小份 + 蒜蓉生菜', 
+    dinner: '清蒸虾仁 + 凉拌西兰花 + 小份红薯' },
+  // 周二风格
+  { name: '番茄炒蛋日 · 饱腹版', cal: '约 1550 kcal', tag: '饱腹·家常',
+    breakfast: '红薯 1 个 + 水煮蛋 + 荷兰豆', 
+    lunch: '番茄炒蛋 + 青椒海鲜菇炒鸡胸 + 糙米饭', 
+    dinner: '贝贝南瓜 + 煎鸡排 + 炒青菜 + 圣女果' },
+  // 周三风格
+  { name: '蟹柳鸡蛋日 · 低脂版', cal: '约 1400 kcal', tag: '低脂·高蛋白',
+    breakfast: '全麦面包 1 片 + 生菜 + 水煮蛋', 
+    lunch: '蟹柳炒鸡蛋 + 清炒小青菜 + 全麦面包', 
+    dinner: '凉拌魔芋结 + 虾仁 + 黄瓜丁 + 玉米粒' },
+  // 周四风格
+  { name: '青椒鸡蛋日 · 简易版', cal: '约 1500 kcal', tag: '简易·快手',
+    breakfast: '紫薯 1 个 + 水煮蛋 + 清炒青菜', 
+    lunch: '青椒炒鸡蛋 + 荞麦面 + 凉拌木耳', 
+    dinner: '煎鸡胸肉 + 煮鸡蛋 + 炒青菜 + 圣女果' },
+  // 周五风格
+  { name: '双色饭日 · 均衡版', cal: '约 1600 kcal', tag: '均衡·饱腹',
+    breakfast: '红薯 + 水煮蛋 + 火龙果半个', 
+    lunch: '番茄炒蛋 + 清炒青菜 + 双色饭（糙米+白米）', 
+    dinner: '卤鸡腿 1 只 + 蒸紫薯 + 清炒时蔬' },
+  // 周六风格
+  { name: '白灼虾日 · 高蛋白版', cal: '约 1650 kcal', tag: '高蛋白·低脂',
+    breakfast: '玉米 + 水煮蛋 + 西兰花', 
+    lunch: '白灼虾 + 炒油麦菜 + 糙米饭', 
+    dinner: '烤土豆 + 卤牛肉 + 西兰花 + 煮鸡蛋' },
+  // 额外：阿雀风格沉浸式备餐
+  { name: '沉浸式备餐 · 一锅出', cal: '约 1480 kcal', tag: '一锅出·省事',
+    breakfast: '钢切燕麦牛奶粥 + 蓝莓 + 坚果碎', 
+    lunch: '一锅出：鸡腿肉 + 红薯块 + 西兰花 + 胡萝卜', 
+    dinner: '豆腐虾仁汤 + 凉拌黄瓜 + 小份糙米饭' },
+  // 额外：肉肉风格减脂便当
+  { name: '减脂便当 · 懒人版', cal: '约 1520 kcal', tag: '便当·便携',
+    breakfast: '全麦吐司 + 牛油果 + 水煮蛋', 
+    lunch: '便当盒：杂粮饭 + 香煎鸡胸 + 西红柿 + 生菜', 
+    dinner: '三文鱼 + 蒸南瓜 + 凉拌海带丝' },
+  // 额外：轻断食日
+  { name: '轻断食日 · 控卡版', cal: '约 1200 kcal', tag: '轻断食·低卡',
+    breakfast: '无糖豆浆 + 水煮蛋 + 圣女果', 
+    lunch: '鸡胸肉沙拉 + 橄榄油醋汁 + 全麦面包 1 片', 
+    dinner: '冬瓜虾仁汤 + 凉拌木耳 + 黄瓜' },
+  // 额外：中式家常
+  { name: '中式控卡日 · 家常版', cal: '约 1550 kcal', tag: '中式·家常',
+    breakfast: '杂粮粥 1 碗 + 茶叶蛋 + 凉拌菠菜', 
+    lunch: '清蒸鸡胸肉 + 蒜蓉西兰花 + 米饭小份', 
+    dinner: '紫菜蛋花汤 + 凉拌鸡丝 + 蒸南瓜' }
+];
+
+// ============ 初始化 ============
+function init() {
+  updateDate();
+  renderCalendar();
+  loadAllNotes();
+  renderCheckStates();
+  renderBiliVideos();
+  generateMeals();
+  bindNav();
+  bindNotes();
+}
+
+function updateDate() {
   const d = new Date();
-  document.getElementById('statusTime').textContent = d.toTimeString().slice(0,5);
   const weeks = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
-  document.getElementById('homeDate').textContent = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日 ${weeks[d.getDay()]}`;
-}
-updateTime();
-setInterval(updateTime, 60000);
-
-// ============ Jennie 演唱会背景图（随机） ============
-const JENNIE_BG_IMAGES = [
-  { url: 'bg-images/jennie-coachella-01.jpg', caption: 'Coachella 2023 · 主舞台团体造型', author: '@BLACKPINK · Coachella 2023', desc: 'Jennie 在 Coachella 主舞台的 iconic 造型，粉色战袍+镂空设计，又甜又辣 ⌄' },
-  { url: 'bg-images/jennie-coachella-02.jpg', caption: 'Coachella 2023 · 黑白对比造型', author: '@BLACKPINK · Coachella 2023', desc: '第二套团体造型，黑白撞色 + 金属装饰，又辣又帅的舞台风格 ⌄' },
-  { url: 'bg-images/jennie-05.jpg', caption: 'Jennie 2023 · 单人近照', author: '@Jennie Kim · 2023', desc: 'Jennie 2023 年单人造型，标志甜辣风 ⌄' }
-];
-function pickRandomBg() {
-  const pick = JENNIE_BG_IMAGES[Math.floor(Math.random() * JENNIE_BG_IMAGES.length)];
-  const bg = document.getElementById('bgVideo');
-  if (bg) bg.style.backgroundImage = `url('${pick.url}')`;
-  // 同步更新文案
-  const overlay = document.querySelector('.video-overlay-info');
-  if (overlay) {
-    overlay.querySelector('.likes').textContent = '🎤 ' + pick.caption;
-    overlay.querySelector('div:nth-child(2)').textContent = pick.author;
-    overlay.querySelector('.user-desc').textContent = pick.desc;
-  }
-}
-window.addEventListener('load', () => { pickRandomBg(); setTimeout(openSidebar, 100); });
-
-// ============ 侧边栏 ============
-const sidebar = document.getElementById('sidebar');
-const overlay = document.getElementById('overlay');
-function openSidebar() {
-  sidebar.classList.add('open');
-  overlay.classList.add('show');
-  document.getElementById('openTrigger').style.display = 'none';
-}
-function closeSidebar() {
-  sidebar.classList.remove('open');
-  overlay.classList.remove('show');
-  // 如果当前在某个二级页面里，就不显示触发按钮（避免遮挡）
-  const inPage = document.getElementById('contentPage').classList.contains('show');
-  document.getElementById('openTrigger').style.display = inPage ? 'none' : 'block';
+  document.getElementById('pageDate').textContent = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日 ${weeks[d.getDay()]}`;
 }
 
-// ============ 页面切换 ============
-const pageTitles = {
-  'daily-plan': '每日计划',
-  'topic-inspiration': '选题每日灵感',
-  'violin': '每日健身',
-  'english': '多邻国'
-};
-
-document.querySelectorAll('.menu-item').forEach(item => {
-  item.addEventListener('click', function() {
-    document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-    this.classList.add('active');
-    const page = this.dataset.page;
-    if (pageTitles[page]) {
-      switchPage(page);
-    }
-  });
-});
-
-function switchPage(pageId) {
-  // 隐藏首页
-  document.getElementById('homePage').style.display = 'none';
-  // 显示内容容器
-  document.getElementById('contentPage').classList.add('show');
-  // 隐��所有 page
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('show'));
-  // 显示对应 page
-  const target = document.getElementById('page-' + pageId);
-  if (target) target.classList.add('show');
-  // 显示返回与标题
-  document.getElementById('pageBack').classList.add('show');
-  const titleEl = document.getElementById('pageTitle');
-  titleEl.textContent = pageTitles[pageId] || '';
-  titleEl.classList.add('show');
-  // 关闭侧边栏
-  closeSidebar();
-  // 内容容器滚到顶
-  document.getElementById('contentPage').scrollTop = 0;
-  // 渲染日历（每个页面顶部）
-  renderCalendar(pageId);
-  // 触发模块初始化
-  if (pageId === 'daily-plan') renderDailyPlan();
-  if (pageId === 'topic-inspiration') renderInspiration();
-  if (pageId === 'violin') renderFitness();
-  if (pageId === 'english') renderDuolingo();
-}
-
-function backToSidebar() {
-  // 关闭当前页面，直接弹出侧边栏
-  document.getElementById('contentPage').classList.remove('show');
-  document.getElementById('homePage').style.display = 'block';
-  document.getElementById('pageBack').classList.remove('show');
-  document.getElementById('pageTitle').classList.remove('show');
-  document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-  openSidebar();
-}
-
-// ============ 公共日历区 ============
-function getCalendarMarks(key) {
-  // 返回本月已打卡的日期数组（基于历史 localStorage 记录）
-  return JSON.parse(localStorage.getItem('wb_cal_' + key) || '[]');
-}
-function markCalendar(key) {
-  const today = new Date().getDate();
-  const marks = getCalendarMarks(key);
-  if (!marks.includes(today)) {
-    marks.push(today);
-    localStorage.setItem('wb_cal_' + key, JSON.stringify(marks));
-  }
-}
-
-function renderCalendar(pageId) {
-  const calKey = pageId === 'daily-plan' ? 'plan' : pageId === 'topic-inspiration' ? 'insp' : pageId === 'violin' ? 'fitness' : 'duolingo';
-  const marks = getCalendarMarks(calKey);
-  const container = document.getElementById('cal-' + pageId);
-  if (!container) return;
-
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
-  const today = now.getDate();
-  const monthNames = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-
-  // 计算当月天数与第一天星期
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const firstDayWeek = new Date(year, month, 1).getDay();
-
-  // 连续打卡天数（简化：本月标记总数）
-  const streak = marks.length;
-
-  let html = `
-    <div class="cal-title">
-      <span class="month">${year}年 ${monthNames[month]}</span>
-      <span class="streak">🔥 本月打卡 ${streak} 天</span>
-    </div>
-    <div class="cal-week">
-  `;
-  // 前置空白天（上月末尾）
-  for (let i = 0; i < firstDayWeek; i++) {
-    html += `<div class="cal-day other-month"><div class="num"></div></div>`;
-  }
-  // 当月日期
-  for (let d = 1; d <= daysInMonth; d++) {
-    const hasMark = marks.includes(d);
-    const isToday = d === today;
-    html += `<div class="cal-day${hasMark ? ' has-mark' : ''}${isToday ? ' today' : ''}">
-      <div class="num">${d}</div><div class="dot"></div>
-    </div>`;
-  }
-  html += `</div>`;
-  container.innerHTML = html;
-}
-
-// 旧 load 监听已合并到上方 pickRandomBg 处
-sidebar.addEventListener('click', e => e.stopPropagation());
-
-// ============ 次日重置通用函数 ============
-function todayKey() { return new Date().toDateString(); }
-function checkDayReset(key, resetFn) {
-  const stored = localStorage.getItem(key + '_date');
-  const today = todayKey();
-  if (stored !== today) {
-    resetFn();
-    localStorage.setItem(key + '_date', today);
-    return true;
-  }
-  return false;
-}
-
-// ============ 模块1：每日计划 ============
-const WATER_TIMES = [9, 11, 14, 16, 19];
-const WATER_PER = 250;
-
-function getWater() {
-  let s = JSON.parse(localStorage.getItem('wb_water') || '{}');
-  if (checkDayReset('wb_water', () => { s = {}; localStorage.setItem('wb_water', '{}'); })) {}
-  return s;
-}
-function saveWater(s) { localStorage.setItem('wb_water', JSON.stringify(s)); }
-
-function renderDailyPlan() {
-  // 饮水
-  const water = getWater();
-  const wrap = document.getElementById('waterTimes');
-  wrap.innerHTML = '';
-  WATER_TIMES.forEach(t => {
-    const done = !!water[t];
-    const el = document.createElement('div');
-    el.className = 'water-time' + (done ? ' done' : '');
-    el.innerHTML = `<div class="t">${t}:00</div><div class="ml">${WATER_PER}ml</div><div class="done-mark">✓</div>`;
-    el.onclick = () => {
-      const w = getWater();
-      w[t] = !w[t];
-      saveWater(w);
-      renderDailyPlan();
-    };
-    wrap.appendChild(el);
-  });
-  const doneCount = WATER_TIMES.filter(t => water[t]).length;
-  const totalMl = doneCount * WATER_PER;
-  document.getElementById('waterMl').textContent = `${totalMl} / 1500 ml`;
-  document.getElementById('waterFill').style.width = Math.min(100, totalMl/1800*100) + '%';
-  // 全部完成则标记日历
-  if (doneCount === WATER_TIMES.length) markCalendar('plan');
-  renderCalendar('daily-plan');
-
-  // 任务
-  renderTasks('high');
-  renderTasks('normal');
-  renderTasks('free');
-}
-
-function getTasks(type) {
-  return JSON.parse(localStorage.getItem('wb_tasks_' + type) || '[]');
-}
-function saveTasks(type, arr) { localStorage.setItem('wb_tasks_' + type, JSON.stringify(arr)); }
-
-function renderTasks(type) {
-  // 次日重置：勾选清空，文本保留
-  checkDayReset('wb_tasks_' + type, () => {
-    const arr = getTasks(type);
-    arr.forEach(t => t.done = false);
-    saveTasks(type, arr);
-  });
-
-  const arr = getTasks(type);
-  const container = document.getElementById('task' + type.charAt(0).toUpperCase() + type.slice(1));
-  container.innerHTML = '';
-  arr.forEach((t, i) => {
-    const el = document.createElement('div');
-    el.className = 'task-item' + (t.done ? ' done' : '');
-    el.innerHTML = `<div class="check-circle${t.done ? ' checked' : ''}">✓</div><div class="text">${escapeHTML(t.text)}</div><div class="del">×</div>`;
-    el.querySelector('.check-circle').onclick = () => {
-      const a = getTasks(type);
-      a[i].done = !a[i].done;
-      saveTasks(type, a);
-      renderTasks(type);
-    };
-    el.querySelector('.del').onclick = () => {
-      const a = getTasks(type);
-      a.splice(i, 1);
-      saveTasks(type, a);
-      renderTasks(type);
-    };
-    container.appendChild(el);
-  });
-}
-
-function addTask(type) {
-  const input = document.getElementById('newTask' + type.charAt(0).toUpperCase() + type.slice(1));
-  const text = input.value.trim();
-  if (!text) return;
-  const arr = getTasks(type);
-  arr.push({ text, done: false });
-  saveTasks(type, arr);
-  input.value = '';
-  renderTasks(type);
-}
-
-function escapeHTML(s) { return s.replace(/[<>&"]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c])); }
-
-// ============ 模块2：选题灵感 ============
-const INSP_DATA = [
-  { platform:'dy', title:'义乌工厂直发！外贸尾单30元拿货价真相', likes:'12.3w', saves:'4.2w', shares:'1.8w', hot:'价格冲击+源头揭秘', cat:'服饰/小商品', link:'https://www.douyin.com' },
-  { platform:'dy', title:'工厂老板直播拆解：一双鞋的真实成本', likes:'28.6w', saves:'9.1w', shares:'5.2w', hot:'反差感+信任建立', cat:'鞋靴', link:'https://www.douyin.com' },
-  { platform:'xhs', title:'工厂源头｜1元到底能买到什么', likes:'5.4w', saves:'3.1w', shares:'1.2w', hot:'低价钩子+实测', cat:'日用杂货', link:'https://www.xiaohongshu.com' },
-  { platform:'xhs', title:'外贸原单真相｜工厂内部实拍', likes:'3.2w', saves:'1.8w', shares:'0.6w', hot:'揭秘叙事', cat:'服装', link:'https://www.xiaohongshu.com' },
-  { platform:'dy', title:'源头工厂3元包邮还赚钱？账本全公开', likes:'45.2w', saves:'12.3w', shares:'8.7w', hot:'价格钩子+账本透明', cat:'日用/小商品', link:'https://www.douyin.com' },
-  { platform:'dy', title:'工厂老板娘对线中间商，痛斥压价', likes:'22.4w', saves:'6.8w', shares:'3.9w', hot:'冲突叙事+情绪共鸣', cat:'全品类', link:'https://www.douyin.com' },
-  { platform:'xhs', title:'工厂源头带货避坑指南｜别再被坑', likes:'2.8w', saves:'1.5w', shares:'0.4w', hot:'避坑价值+清单', cat:'全品类', link:'https://www.xiaohongshu.com' },
-  { platform:'dy', title:'10元3件包邮还能赚？工厂源头账本拆给你看', likes:'18.7w', saves:'5.4w', shares:'2.1w', hot:'价格钩子+成本拆解', cat:'日用/小商品', link:'https://www.douyin.com' },
-];
-
-const INSP_DETAILS = [
-  { hook:'开头3秒直接抛价格"30元拿货价"击穿认知', rhythm:'0-3s 价格冲击 → 3-15s 工厂实拍 → 15-30s 成本拆解 → 30-45s 信任建立', visual:'手持镜头+工厂车间+流水线特写+账本截图', fit:'服饰/小商品/日用' },
-  { hook:'反问"你以为一双鞋成本多少？"', rhythm:'0-3s 反问钩子 → 3-20s 逐步拆解 → 20-40s 真相揭示 → 40-60s 老板背书', visual:'工厂全景+材质特写+老板出镜+对比图', fit:'鞋靴/皮具' },
-  { hook:'抛1元商品引发好奇', rhythm:'0-3s 价格钩子 → 3-15s 实测开箱 → 15-30s 对比 → 30-45s 工厂溯源', visual:'开箱+对比+工厂+价格标签', fit:'日用/小商品' },
-];
-
-function renderInspiration() {
-  const body = document.getElementById('inspBody');
-  body.innerHTML = '';
-  INSP_DATA.forEach((row, i) => {
-    const tr = document.createElement('tr');
-    tr.className = 'clickable';
-    tr.innerHTML = `
-      <td><span class="platform ${row.platform}">${row.platform === 'dy' ? '抖音' : '小红书'}</span></td>
-      <td class="title">${row.title}</td>
-      <td>${row.likes}</td>
-      <td>${row.saves}</td>
-      <td>${row.shares}</td>
-      <td>${row.hot}</td>
-      <td>${row.cat}</td>
-      <td class="link"><a href="${row.link}" target="_blank">观看 ↗</a></td>
-    `;
-    tr.onclick = (e) => {
-      if (e.target.tagName === 'A') return;
-      toggleInspDetail(i);
-    };
-    body.appendChild(tr);
-
-    const detailTr = document.createElement('tr');
-    detailTr.className = 'insp-row-detail';
-    detailTr.id = 'detail-' + i;
-    detailTr.style.display = 'none';
-    const d = INSP_DETAILS[i] || INSP_DETAILS[0];
-    detailTr.innerHTML = `<td colspan="8">
-      <div class="detail-grid">
-        <div class="detail-item"><div class="k">钩子</div><div class="v">${d.hook}</div></div>
-        <div class="detail-item"><div class="k">叙事节奏</div><div class="v">${d.rhythm}</div></div>
-        <div class="detail-item"><div class="k">视觉元素</div><div class="v">${d.visual}</div></div>
-        <div class="detail-item"><div class="k">适配品类</div><div class="v">${d.fit}</div></div>
-      </div>
-    </td>`;
-    body.appendChild(detailTr);
-  });
-
-  // 推荐
-  const recWrap = document.getElementById('recommendCards');
-  recWrap.innerHTML = '<h4>🎯 3 个最优翻拍选题</h4>';
-  const picks = [4, 5, 0]; // 选 3 个
-  picks.forEach(idx => {
-    const r = INSP_DATA[idx];
-    const el = document.createElement('div');
-    el.className = 'rec-card';
-    el.innerHTML = `<div class="title">翻拍：${r.title}</div><div class="reason">推荐理由：${r.hot}，已验证 ${r.likes} 流量。建议沿用 ${r.cat} 赛道，开头 3 秒直接抛钩子，工厂实景+账本拆解组合拳，建立信任后再引导下单。</div>`;
-    recWrap.appendChild(el);
-  });
-}
-
-function toggleInspDetail(i) {
-  const el = document.getElementById('detail-' + i);
-  el.style.display = el.style.display === 'none' ? 'table-row' : 'none';
-}
-
-function refreshInspiration() {
-  // 示例数据：打乱顺序
-  for (let i = INSP_DATA.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [INSP_DATA[i], INSP_DATA[j]] = [INSP_DATA[j], INSP_DATA[i]];
-  }
-  renderInspiration();
-}
-
-// ============ 模块3：每日健身 ============
-const EXERCISES = {
-  warmup: ['颈肩环绕 ×10', '肩胛骨收缩 ×10', '站姿体侧屈 ×10'],
-  main: ['靠墙天使 ×15', '猫牛式 ×10', '死虫式 ×10', '臀桥 ×15', '鸟狗式 ×10', '坐姿脊柱扭转 ×10'],
-  stretch: ['胸大肌拉伸 30s', '婴儿式 30s', '仰卧脊柱扭转 30s']
-};
-
-function getFitnessState() {
-  let s = JSON.parse(localStorage.getItem('wb_fitness') || '{}');
-  checkDayReset('wb_fitness', () => { s = {}; localStorage.setItem('wb_fitness', '{}'); });
-  return s;
-}
-function saveFitnessState(s) { localStorage.setItem('wb_fitness', JSON.stringify(s)); }
-
-function renderFitness() {
-  const state = getFitnessState();
-  ['warmup', 'main', 'stretch'].forEach(sec => {
-    const wrap = document.getElementById(sec + 'List');
-    wrap.innerHTML = '';
-    EXERCISES[sec].forEach((name, i) => {
-      const key = sec + '_' + i;
-      const done = !!state[key];
-      const el = document.createElement('div');
-      el.className = 'exercise-item' + (done ? ' done' : '');
-      el.innerHTML = `<div class="num">${done ? '✓' : ''}</div><div class="ex-name">${name}</div><div class="ex-reps"></div>`;
-      el.onclick = () => {
-        const s = getFitnessState();
-        s[key] = !s[key];
-        saveFitnessState(s);
-        renderFitness();
-      };
-      wrap.appendChild(el);
+// ============ 侧边栏导航 ============
+function bindNav() {
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const sec = el.dataset.section;
+      switchSection(sec);
+      if (window.innerWidth <= 640) document.getElementById('sidebar').classList.remove('open');
     });
   });
-
-  // 顶部圆圈
-  const allKeys = ['warmup', 'main', 'stretch'].flatMap(sec => EXERCISES[sec].map((_, i) => sec + '_' + i));
-  const allDone = allKeys.every(k => state[k]);
-  const circle = document.getElementById('fitnessCircle');
-  circle.classList.toggle('checked', allDone);
-  circle.textContent = allDone ? '✓' : '';
-  // 全部完成则标记日历
-  if (allDone) markCalendar('fitness');
-  renderCalendar('violin');
 }
 
-function toggleFitness() {
-  const state = getFitnessState();
-  const allKeys = ['warmup', 'main', 'stretch'].flatMap(sec => EXERCISES[sec].map((_, i) => sec + '_' + i));
-  const allDone = allKeys.every(k => state[k]);
-  allKeys.forEach(k => state[k] = !allDone);
-  saveFitnessState(state);
-  renderFitness();
+function switchSection(sec) {
+  currentSection = sec;
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.section === sec));
+  document.querySelectorAll('.section').forEach(el => el.classList.toggle('show', el.id === 'sec-' + sec));
+  const titleMap = {
+    fitness: '强身健体', edit: '剪辑课程', japanese: '日语听力', meal: '三餐建议', read: '每日阅读',
+    summary: '月度汇总'
+  };
+  document.getElementById('pageTitle').textContent = titleMap[sec] || '程佳宁工作台';
+  document.querySelector('.main-scroll').scrollTop = 0;
+  if (sec === 'summary') renderSummary();
 }
 
-function oneClickFitness() {
-  const state = {};
-  ['warmup', 'main', 'stretch'].forEach(sec => EXERCISES[sec].forEach((_, i) => state[sec + '_' + i] = true));
-  saveFitnessState(state);
-  markCalendar('fitness');
-  renderFitness();
-}
-
-// ============ 模块4：多邻国 ============
-const LANG_TIPS = {
-  '日语': ['假名复习：あ-ん 五十音默写 5min', '汉字认读：今日 10 个 N5 汉字', 'N5 词组：每天 20 个核心词', '语法点：は/が 区分 + 例句', '口语句：便利店/电车场景 5 句'],
-  '英语': ['词根词缀：5 个常见前缀/后缀', '短语搭配：5 个动词短语', '听力材料：1 段 3min BBC/CNN', '口语模板：自我介绍 5 句', '写作句：1 个高级句型'],
-  '西语': ['字母复习：a-z 发音', '常用词：10 个生存词汇', '动词变位：ser/estar 现在时', '语法点：名词阴阳性', '口语句：餐厅点单 5 句'],
-  '法语': ['字母复习：a-z 发音规则', '常用词：10 个生存词汇', '动词变位：être/avoir', '语法点：le/la 区分', '口语句：问候 5 句']
-};
-
-function getDuolingoState() {
-  let done = JSON.parse(localStorage.getItem('wb_duolingo_done') || 'false');
-  checkDayReset('wb_duolingo', () => { localStorage.setItem('wb_duolingo_done', 'false'); done = false; });
-  return done;
-}
-function getLang() { return localStorage.getItem('wb_duolingo_lang') || '日语'; }
-
-function renderDuolingo() {
-  const done = getDuolingoState();
-  const circle = document.getElementById('duolingoCircle');
-  circle.classList.toggle('checked', done);
-  circle.textContent = done ? '✓' : '';
-  document.getElementById('duolingoSub').textContent = done ? '今日已打卡，继续保持' : '点击下方按钮一键完成';
-  if (done) markCalendar('duolingo');
-
-  // 语种选择
-  const lang = getLang();
-  const sel = document.getElementById('langSelector');
-  sel.innerHTML = '';
-  Object.keys(LANG_TIPS).forEach(l => {
-    const el = document.createElement('div');
-    el.className = 'lang-pill' + (l === lang ? ' active' : '');
-    el.textContent = l;
-    el.onclick = () => { localStorage.setItem('wb_duolingo_lang', l); renderDuolingo(); };
-    sel.appendChild(el);
+// ============ 月度汇总 ============
+function renderSummary() {
+  const now = new Date();
+  const year = now.getFullYear(), month = now.getMonth();
+  const keyPrefix = `${year}-${month}-`;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const today = now.getDate();
+  
+  // 统计每个模块的打卡天数
+  const MODULES = [
+    { key: 'fitness', label: '强身健体', icon: '💪' },
+    { key: 'edit', label: '剪辑课程', icon: '🎬' },
+    { key: 'read', label: '每日阅读', icon: '📖' }
+  ];
+  
+  const stats = MODULES.map(m => {
+    let count = 0;
+    for (let d = 1; d <= today; d++) {
+      if (d === today) {
+        if (isTodayChecked(m.key)) count++;
+      } else {
+        if (localStorage.getItem(LS_PREFIX + 'hist_' + m.key + '_' + keyPrefix + d) === '1') count++;
+      }
+    }
+    return { ...m, count, total: today, rate: today > 0 ? Math.round(count / today * 100) : 0 };
   });
+  
+  // 渲染统计卡片
+  const statsHtml = stats.map(s => `
+    <div class="summary-stat-card">
+      <div class="ss-icon">${s.icon}</div>
+      <div class="ss-num">${s.count}<span style="font-size:14px;color:#9e9a95;">/${s.total}</span></div>
+      <div class="ss-label">${s.label} · 本月完成</div>
+      <div class="ss-rate">
+        完成率 ${s.rate}%
+        <div class="bar"><div class="fill" style="width:${s.rate}%"></div></div>
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('summaryStats').innerHTML = statsHtml;
+  
+  // 渲染热力图
+  const firstDay = new Date(year, month, 1).getDay();
+  let heatmapHtml = '';
+  for (let i = 0; i < firstDay; i++) heatmapHtml += '<div class="heatmap-cell"></div>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    // 统计当天打卡数（0-3）
+    let dayCount = 0;
+    MODULES.forEach(m => {
+      if (d === today) {
+        if (isTodayChecked(m.key)) dayCount++;
+      } else if (d < today) {
+        if (localStorage.getItem(LS_PREFIX + 'hist_' + m.key + '_' + keyPrefix + d) === '1') dayCount++;
+      }
+    });
+    const level = dayCount === 0 ? '' : dayCount === 1 ? 'l1' : dayCount === 2 ? 'l2' : dayCount === 3 ? 'l3' : 'l4';
+    const isToday = d === today;
+    heatmapHtml += `<div class="heatmap-cell ${level} ${isToday ? 'today' : ''}">${d}</div>`;
+  }
+  document.getElementById('heatmapGrid').innerHTML = heatmapHtml;
+  
+  // 渲染最近记录（最近 7 天）
+  const recentHtml = [];
+  for (let i = 0; i < 7; i++) {
+    const d = today - i;
+    if (d < 1) break;
+    const dayKey = keyPrefix + d;
+    const isTodayDay = d === today;
+    
+    const tags = [];
+    MODULES.forEach(m => {
+      let done = false;
+      if (isTodayDay) done = isTodayChecked(m.key);
+      else done = localStorage.getItem(LS_PREFIX + 'hist_' + m.key + '_' + dayKey) === '1';
+      tags.push({ label: m.label, done });
+    });
+    
+    const notes = [];
+    const fn = isTodayDay ? (localStorage.getItem(LS_PREFIX + 'fitnessNote') || '') : (localStorage.getItem(LS_PREFIX + 'hist_fitnessNote_' + dayKey) || '');
+    const en = isTodayDay ? (localStorage.getItem(LS_PREFIX + 'editNote') || '') : (localStorage.getItem(LS_PREFIX + 'hist_editNote_' + dayKey) || '');
+    const rn = isTodayDay ? (localStorage.getItem(LS_PREFIX + 'readNote') || '') : (localStorage.getItem(LS_PREFIX + 'hist_readNote_' + dayKey) || '');
+    if (fn) notes.push(fn.slice(0, 30) + (fn.length > 30 ? '...' : ''));
+    if (en) notes.push(en.slice(0, 30) + (en.length > 30 ? '...' : ''));
+    if (rn) notes.push(rn.slice(0, 30) + (rn.length > 30 ? '...' : ''));
+    
+    const hasAny = tags.some(t => t.done) || notes.length > 0;
+    if (!hasAny) continue;
+    
+    const tagsHtml = tags.map(t => `<span class="tag ${t.done ? 'done' : ''}">${t.done ? '✓' : '○'} ${t.label}</span>`).join('');
+    const notesHtml = notes.length ? `<div style="margin-top:4px;color:#9e9a95;font-size:12px;">${notes.join(' · ')}</div>` : '';
+    
+    recentHtml.push(`
+      <div class="recent-item">
+        <div class="ri-date"><div class="d">${d}</div><div>${month+1}月</div></div>
+        <div class="ri-content">
+          <div class="tags">${tagsHtml}</div>
+          ${notesHtml}
+        </div>
+      </div>
+    `);
+  }
+  document.getElementById('recentList').innerHTML = recentHtml.length ? recentHtml.join('') : '<div style="text-align:center;color:#9e9a95;padding:20px;">暂无记录</div>';
+}
 
-  // 学习建议
-  const tips = LANG_TIPS[lang] || LANG_TIPS['日语'];
-  const wrap = document.getElementById('tipList');
-  wrap.innerHTML = '';
-  tips.forEach((t, i) => {
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ============ 月历 ============
+function getMarks() {
+  return JSON.parse(localStorage.getItem(LS_PREFIX + 'marks') || '{}');
+}
+function saveMarks(marks) {
+  localStorage.setItem(LS_PREFIX + 'marks', JSON.stringify(marks));
+}
+
+function renderCalendar() {
+  const now = new Date();
+  const year = now.getFullYear(), month = now.getMonth();
+  const marks = getMarks();
+  const keyPrefix = `${year}-${month}-`;
+  
+  const monthNames = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstDay = new Date(year, month, 1).getDay();
+  
+  // 统计本月打卡天数和连续天数
+  let monthCount = 0, streak = 0;
+  for (let d = 1; d <= daysInMonth; d++) {
+    if (marks[keyPrefix + d]) monthCount++;
+  }
+  for (let d = now.getDate(); d >= 1; d--) {
+    if (marks[keyPrefix + d]) streak++; else break;
+  }
+  
+  // 更新统计
+  const fitnessCount = Object.keys(marks).filter(k => k.startsWith(keyPrefix) && marks[k]).length;
+  document.getElementById('fitnessTotal').textContent = fitnessCount;
+  document.getElementById('fitnessStreak').textContent = streak;
+  
+  // 计算今天日期数字（用于判断可点击）
+  const todayDate = now.getDate();
+  
+  let html = `<div class="cal-title"><span class="month">${year}年 ${monthNames[month]}</span><span class="streak">🔥 本月打卡 ${monthCount} 天</span></div>`;
+  html += '<div class="cal-week">';
+  ['日','一','二','三','四','五','六'].forEach(w => html += `<div class="weekday">${w}</div>`);
+  for (let i = 0; i < firstDay; i++) html += '<div class="cal-day other-month"></div>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const hasMark = marks[keyPrefix + d];
+    const isToday = d === todayDate;
+    const isFuture = d > todayDate;
+    const cls = ['cal-day'];
+    if (isToday) cls.push('today');
+    if (hasMark) cls.push('has-mark');
+    if (isFuture) cls.push('future');
+    else cls.push('clickable');
+    const clickHandler = isFuture ? '' : `onclick="openDayModal(${d})"`;
+    html += `<div class="${cls.join(' ')}" ${clickHandler}>${d}</div>`;
+  }
+  html += '</div>';
+  document.getElementById('calendarCard').innerHTML = html;
+}
+
+// ============ 打卡系统 ============
+function isTodayChecked(key) {
+  const today = new Date().toDateString();
+  return localStorage.getItem(LS_PREFIX + key + '_date') === today;
+}
+function setTodayChecked(key, checked) {
+  const today = new Date().toDateString();
+  if (checked) localStorage.setItem(LS_PREFIX + key + '_date', today);
+  else localStorage.removeItem(LS_PREFIX + key + '_date');
+  
+  // 同步月历标记
+  const now = new Date();
+  const markKey = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
+  const marks = getMarks();
+  if (checked) marks[markKey] = true;
+  else delete marks[markKey];
+  saveMarks(marks);
+}
+
+// ============ 日期弹窗编辑（查看/修改任意一天） ============
+let modalCurrentDay = null;  // 当前弹窗编辑的日期（数字）
+
+function openDayModal(dayNum) {
+  modalCurrentDay = dayNum;
+  const now = new Date();
+  const year = now.getFullYear(), month = now.getMonth();
+  const weeks = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+  const thatDate = new Date(year, month, dayNum);
+  document.getElementById('modalDate').textContent = `${month+1}月${dayNum}日 ${weeks[thatDate.getDay()]}`;
+  
+  // 读取当天的打卡状态和笔记
+  const dayKey = `${year}-${month}-${dayNum}`;  // 与 markKey 一致
+  
+  // 打卡状态：只读历史打卡状态（基于 markKey），允许切换
+  const checks = [
+    { key: 'fitness', label: '强身健体' },
+    { key: 'edit', label: '剪辑课程' },
+    { key: 'read', label: '每日阅读' }
+  ];
+  // 检查当天打卡状态：如果是今天用 isTodayChecked，否则检查自定义历史记录
+  const isToday = dayNum === now.getDate();
+  const checksContainer = document.getElementById('modalChecks');
+  checksContainer.innerHTML = '';
+  
+  checks.forEach(c => {
+    let checked;
+    if (isToday) {
+      checked = isTodayChecked(c.key);
+    } else {
+      // 历史日期：用单独的历史记录 key
+      checked = localStorage.getItem(LS_PREFIX + 'hist_' + c.key + '_' + dayKey) === '1';
+    }
     const el = document.createElement('div');
-    el.className = 'tip-item';
-    el.innerHTML = `<div class="n">${i+1}</div><div>${t}</div>`;
-    wrap.appendChild(el);
+    el.className = 'modal-check' + (checked ? ' checked' : '');
+    el.textContent = (checked ? '✓ ' : '○ ') + c.label;
+    el.dataset.key = c.key;
+    el.dataset.dayKey = dayKey;
+    el.dataset.isToday = isToday;
+    el.onclick = () => {
+      el.classList.toggle('checked');
+      el.textContent = el.classList.contains('checked') ? '✓ ' + c.label : '○ ' + c.label;
+    };
+    checksContainer.appendChild(el);
   });
-  renderCalendar('english');
+  
+  // 笔记：当天如果有历史笔记就读出来，否则空
+  document.getElementById('modalFitnessNote').value = localStorage.getItem(LS_PREFIX + 'hist_fitnessNote_' + dayKey) || (isToday ? (localStorage.getItem(LS_PREFIX + 'fitnessNote') || '') : '');
+  document.getElementById('modalEditNote').value = localStorage.getItem(LS_PREFIX + 'hist_editNote_' + dayKey) || (isToday ? (localStorage.getItem(LS_PREFIX + 'editNote') || '') : '');
+  document.getElementById('modalReadNote').value = localStorage.getItem(LS_PREFIX + 'hist_readNote_' + dayKey) || (isToday ? (localStorage.getItem(LS_PREFIX + 'readNote') || '') : '');
+  
+  document.getElementById('dayModal').classList.add('show');
 }
 
-function toggleDuolingo() {
-  const done = !getDuolingoState();
-  localStorage.setItem('wb_duolingo_done', JSON.stringify(done));
-  if (done) markCalendar('duolingo');
-  renderDuolingo();
+function closeDayModal() {
+  document.getElementById('dayModal').classList.remove('show');
+  modalCurrentDay = null;
 }
 
-function oneClickDuolingo() {
-  localStorage.setItem('wb_duolingo_done', 'true');
-  markCalendar('duolingo');
-  renderDuolingo();
+function saveDayModal() {
+  if (modalCurrentDay === null) return;
+  const now = new Date();
+  const year = now.getFullYear(), month = now.getMonth();
+  const dayKey = `${year}-${month}-${modalCurrentDay}`;
+  const isToday = modalCurrentDay === now.getDate();
+  
+  // 保存打卡状态
+  document.querySelectorAll('#modalChecks .modal-check').forEach(el => {
+    const key = el.dataset.key;
+    const checked = el.classList.contains('checked');
+    if (isToday) {
+      // 今天：直接调用 setTodayChecked
+      setTodayChecked(key, checked);
+    } else {
+      // 历史日期：保存到 hist_ key
+      localStorage.setItem(LS_PREFIX + 'hist_' + key + '_' + dayKey, checked ? '1' : '0');
+      // 同步更新月历标记
+      const marks = getMarks();
+      // 如果三个打卡任意一个为 true，标记当天有打卡
+      const anyChecked = Array.from(document.querySelectorAll('#modalChecks .modal-check')).some(e => e.classList.contains('checked'));
+      if (anyChecked) marks[dayKey] = true;
+      else delete marks[dayKey];
+      saveMarks(marks);
+    }
+  });
+  
+  // 保存笔记
+  const fn = document.getElementById('modalFitnessNote').value;
+  const en = document.getElementById('modalEditNote').value;
+  const rn = document.getElementById('modalReadNote').value;
+  
+  if (isToday) {
+    // 今天：同步更新主界面的笔记
+    localStorage.setItem(LS_PREFIX + 'fitnessNote', fn);
+    localStorage.setItem(LS_PREFIX + 'editNote', en);
+    localStorage.setItem(LS_PREFIX + 'readNote', rn);
+    document.getElementById('fitnessNote').value = fn;
+    document.getElementById('editNote').value = en;
+    document.getElementById('readNote').value = rn;
+  } else {
+    // 历史日期：保存到 hist_ key
+    localStorage.setItem(LS_PREFIX + 'hist_fitnessNote_' + dayKey, fn);
+    localStorage.setItem(LS_PREFIX + 'hist_editNote_' + dayKey, en);
+    localStorage.setItem(LS_PREFIX + 'hist_readNote_' + dayKey, rn);
+  }
+  
+  closeDayModal();
+  renderCalendar();
+  renderCheckStates();
 }
 
+function toggleCheck(key) {
+  const checked = !isTodayChecked(key);
+  setTodayChecked(key, checked);
+  renderCheckStates();
+  renderCalendar();
+}
+
+function renderCheckStates() {
+  ['fitness', 'edit', 'read'].forEach(key => {
+    const btn = document.getElementById(key + 'Check');
+    const checked = isTodayChecked(key);
+    btn.classList.toggle('checked', checked);
+    btn.textContent = checked ? '✓ 今日已打卡' : '○ 今日未打卡';
+  });
+}
+
+// ============ 文本记录 ============
+function bindNotes() {
+  ['fitnessNote', 'editNote', 'readNote'].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('input', () => {
+      localStorage.setItem(LS_PREFIX + id, el.value);
+    });
+  });
+}
+
+function loadAllNotes() {
+  ['fitnessNote', 'editNote', 'readNote'].forEach(id => {
+    document.getElementById(id).value = localStorage.getItem(LS_PREFIX + id) || '';
+  });
+}
+
+// ============ 日语听力 ============
+function switchSubTab(tab) {
+  currentSubTab = tab;
+  document.querySelectorAll('.sub-tab').forEach(el => el.classList.toggle('active', el.dataset.tab === tab));
+  document.querySelectorAll('.sub-content').forEach(el => el.classList.toggle('show', el.id === 'tab-' + tab));
+}
+
+function renderBiliVideos() {
+  ['variety', 'nhk'].forEach(type => {
+    const container = document.getElementById('tab-' + type);
+    container.innerHTML = '';
+    BILI_VIDEOS[type].forEach((v, i) => {
+      const card = document.createElement('div');
+      card.className = 'video-card';
+      card.id = `vc-${type}-${i}`;
+      card.innerHTML = `
+        <div class="vc-header" onclick="toggleVideoCard('${type}', ${i})">
+          <div class="vc-thumb">${type === 'variety' ? '🎬' : '📺'}</div>
+          <div class="vc-info">
+            <div class="vc-title">${v.title}</div>
+            <div class="vc-meta">${v.tag} · 点击展开播放</div>
+          </div>
+        </div>
+        <div class="vc-body">
+          <div class="bili-player"><iframe src="https://player.bilibili.com/player.html?bvid=${v.bvid}&page=1&high_quality=1" allowfullscreen></iframe></div>
+          <p class="bili-tip">${v.desc}</p>
+          <div class="vc-actions">
+            <a class="vc-btn primary" href="https://www.bilibili.com/video/${v.bvid}" target="_blank">在 B 站打开</a>
+            <a class="vc-btn secondary" href="https://search.bilibili.com/all?keyword=${encodeURIComponent(type === 'variety' ? '日语综艺' : 'NHK新闻')}" target="_blank">搜索更多同类</a>
+          </div>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  });
+}
+
+function toggleVideoCard(type, i) {
+  const card = document.getElementById(`vc-${type}-${i}`);
+  const isExpanded = card.classList.contains('expanded');
+  // 收起同组其他
+  document.querySelectorAll(`#tab-${type} .video-card`).forEach(c => c.classList.remove('expanded'));
+  if (!isExpanded) card.classList.add('expanded');
+}
+
+// ============ 三餐建议 ============
+// 纯中文减脂餐库，参考小红书博主风格，无外部 API 依赖
+async function generateMeals() {
+  const grid = document.getElementById('mealGrid');
+  const loading = document.getElementById('mealLoading');
+  const selected = document.getElementById('mealSelected');
+  grid.innerHTML = '';
+  selected.style.display = 'none';
+  loading.style.display = 'block';
+  
+  // 模拟加载（给用户视觉反馈）
+  await new Promise(r => setTimeout(r, 400));
+  
+  // 从中文菜谱库随机抽取两份不同的
+  const shuffled = [...MEAL_LIBRARY].sort(() => 0.5 - Math.random());
+  const meals = [shuffled[0], shuffled[1]];
+  
+  loading.style.display = 'none';
+  
+  meals.forEach((m, i) => {
+    const card = document.createElement('div');
+    card.className = 'meal-card';
+    card.onclick = () => selectMeal(i, m.name);
+    card.innerHTML = `
+      <div class="meal-name">${m.name}</div>
+      <div style="font-size:11px;color:#c45c3e;background:#fdf2ef;display:inline-block;padding:2px 8px;border-radius:8px;margin-bottom:10px;">${m.tag}</div>
+      <div class="meal-item"><span class="label">早</span>${m.breakfast}</div>
+      <div class="meal-item"><span class="label">午</span>${m.lunch}</div>
+      <div class="meal-item"><span class="label">晚</span>${m.dinner}</div>
+      <div class="meal-cal">🔥 ${m.cal}</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function selectMeal(index, name) {
+  document.querySelectorAll('.meal-card').forEach((c, i) => c.classList.toggle('selected', i === index));
+  const el = document.getElementById('mealSelected');
+  el.textContent = `已选择：方案 ${String.fromCharCode(65 + index)} · ${name}`;
+  el.style.display = 'block';
+}
+
+// 启动
+init();
 </script>
 </body>
 </html>
-
