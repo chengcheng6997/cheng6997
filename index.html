@@ -127,8 +127,44 @@
   .stat-card .num { font-size: 24px; font-weight: 700; color: #c45c3e; }
   .stat-card .label { font-size: 12px; color: #9e9a95; margin-top: 4px; }
   
-  /* 移动端侧边栏折叠 */
-  .menu-toggle { display: none; position: fixed; bottom: 24px; right: 24px; width: 52px; height: 52px; border-radius: 50%; background: #c45c3e; color: #fff; font-size: 22px; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(196,92,62,0.35); z-index: 200; cursor: pointer; }
+  /* 移动端侧边栏折叠按钮 - 右侧垂直居中 */
+  .menu-toggle { display: none; position: fixed; right: 0; top: 50%; transform: translateY(-50%); width: 44px; height: 64px; border-radius: 12px 0 0 12px; background: #c45c3e; color: #fff; font-size: 20px; align-items: center; justify-content: center; box-shadow: -2px 2px 12px rgba(196,92,62,0.3); z-index: 200; cursor: pointer; }
+  
+  /* 日历日期可点击 */
+  .cal-day.clickable { cursor: pointer; }
+  .cal-day.clickable:hover { background: #fdf2ef; }
+  .cal-day.future { cursor: not-allowed; opacity: 0.4; }
+  
+  /* 日期编辑弹窗 */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 500;
+    display: none; align-items: center; justify-content: center; padding: 16px;
+    animation: fadeIn 0.2s ease;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: #fff; border-radius: 20px; width: 100%; max-width: 380px;
+    max-height: 90vh; overflow-y: auto; padding: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #f0ebe5; }
+  .modal-header .m-title { font-size: 17px; font-weight: 700; color: #3d3d3d; }
+  .modal-header .m-close { width: 32px; height: 32px; border-radius: 50%; background: #f5f2ee; color: #8a817c; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; }
+  .modal-section { margin-bottom: 16px; }
+  .modal-section .ms-label { font-size: 13px; font-weight: 600; color: #5c5c5c; margin-bottom: 8px; }
+  .modal-checks { display: flex; gap: 8px; flex-wrap: wrap; }
+  .modal-check {
+    display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px;
+    background: #f5f2ee; color: #8a817c; border-radius: 20px; font-size: 12px;
+    cursor: pointer; transition: all 0.2s; border: 1px solid transparent;
+  }
+  .modal-check.checked { background: #fdf2ef; color: #c45c3e; border-color: #fae0d8; }
+  .modal-note { width: 100%; min-height: 60px; border: 1px solid #ede8e2; border-radius: 10px; padding: 10px; font-size: 13px; line-height: 1.5; resize: vertical; font-family: inherit; color: #4a4a4a; }
+  .modal-note:focus { outline: none; border-color: #c45c3e; }
+  .modal-footer { display: flex; gap: 10px; margin-top: 20px; }
+  .modal-btn { flex: 1; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
+  .modal-btn.save { background: #c45c3e; color: #fff; }
+  .modal-btn.cancel { background: #f5f2ee; color: #5c5c5c; }
   
   @media (max-width: 640px) {
     .sidebar { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); transition: transform 0.3s; width: 100px; }
@@ -138,13 +174,46 @@
   }
   
   ::-webkit-scrollbar { width: 0; display: none; }
+  
+  /* 月度汇总页 */
+  .summary-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+  .summary-stat-card { background: #fff; border-radius: 16px; padding: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+  .summary-stat-card .ss-icon { font-size: 24px; margin-bottom: 8px; }
+  .summary-stat-card .ss-num { font-size: 28px; font-weight: 700; color: #c45c3e; }
+  .summary-stat-card .ss-label { font-size: 12px; color: #9e9a95; margin-top: 4px; }
+  .summary-stat-card .ss-rate { font-size: 11px; color: #5c5c5c; margin-top: 6px; }
+  .summary-stat-card .ss-rate .bar { height: 4px; background: #f5f2ee; border-radius: 2px; overflow: hidden; margin-top: 4px; }
+  .summary-stat-card .ss-rate .fill { height: 100%; background: #c45c3e; border-radius: 2px; }
+  
+  .month-heatmap { background: #fff; border-radius: 18px; padding: 18px; margin-bottom: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+  .month-heatmap .mh-title { font-size: 15px; font-weight: 700; color: #3d3d3d; margin-bottom: 14px; }
+  .heatmap-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .heatmap-cell { aspect-ratio: 1; border-radius: 6px; background: #f5f2ee; font-size: 10px; display: flex; align-items: center; justify-content: center; color: #b0a8a3; }
+  .heatmap-cell.l1 { background: #fae0d8; }
+  .heatmap-cell.l2 { background: #f0b09a; }
+  .heatmap-cell.l3 { background: #d97b5d; color: #fff; }
+  .heatmap-cell.l4 { background: #c45c3e; color: #fff; }
+  .heatmap-cell.today { border: 2px solid #3d3d3d; }
+  .heatmap-legend { display: flex; align-items: center; gap: 6px; margin-top: 12px; font-size: 11px; color: #9e9a95; }
+  .heatmap-legend .swatch { width: 12px; height: 12px; border-radius: 3px; }
+  
+  .recent-list { background: #fff; border-radius: 18px; padding: 18px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+  .recent-list .rl-title { font-size: 15px; font-weight: 700; color: #3d3d3d; margin-bottom: 14px; }
+  .recent-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f5f2ee; font-size: 13px; }
+  .recent-item:last-child { border-bottom: none; }
+  .recent-item .ri-date { width: 36px; height: 36px; border-radius: 10px; background: #fdf2ef; color: #c45c3e; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+  .recent-item .ri-date .d { font-size: 14px; font-weight: 700; }
+  .recent-item .ri-content { flex: 1; color: #5c5c5c; }
+  .recent-item .ri-content .tags { display: flex; gap: 4px; margin-top: 4px; }
+  .recent-item .ri-content .tag { font-size: 10px; padding: 2px 6px; border-radius: 8px; background: #f5f2ee; color: #8a817c; }
+  .recent-item .ri-content .tag.done { background: #fdf2ef; color: #c45c3e; }
 </style>
 </head>
 <body>
 <div class="app">
   <!-- 左侧边栏 -->
   <div class="sidebar" id="sidebar">
-    <div class="logo">程</div>
+    <div class="logo" onclick="switchSection('summary')" style="cursor:pointer;">程</div>
     <div class="nav-item active" data-section="fitness"><span class="icon">💪</span><span>强身健体</span></div>
     <div class="nav-item" data-section="edit"><span class="icon">🎬</span><span>剪辑课程</span></div>
     <div class="nav-item" data-section="japanese"><span class="icon">🎧</span><span>日语听力</span></div>
@@ -163,6 +232,28 @@
       
       <!-- 公共月历 -->
       <div class="calendar-card" id="calendarCard"></div>
+      
+      <!-- 月度汇总页（点"程"图标显示） -->
+      <div class="section" id="sec-summary">
+        <div class="summary-stats" id="summaryStats"></div>
+        <div class="month-heatmap">
+          <div class="mh-title">本月打卡热力图</div>
+          <div class="heatmap-grid" id="heatmapGrid"></div>
+          <div class="heatmap-legend">
+            <span>少</span>
+            <div class="swatch" style="background:#f5f2ee"></div>
+            <div class="swatch" style="background:#fae0d8"></div>
+            <div class="swatch" style="background:#f0b09a"></div>
+            <div class="swatch" style="background:#d97b5d"></div>
+            <div class="swatch" style="background:#c45c3e"></div>
+            <span>多</span>
+          </div>
+        </div>
+        <div class="recent-list">
+          <div class="rl-title">最近记录</div>
+          <div id="recentList"></div>
+        </div>
+      </div>
       
       <!-- 强身健体 -->
       <div class="section show" id="sec-fitness">
@@ -235,6 +326,36 @@
   <div class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">☰</div>
 </div>
 
+<!-- 日期编辑弹窗 -->
+<div class="modal-overlay" id="dayModal" onclick="if(event.target===this)closeDayModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="m-title" id="modalDate">日期</div>
+      <div class="m-close" onclick="closeDayModal()">×</div>
+    </div>
+    <div class="modal-section">
+      <div class="ms-label">当日打卡状态</div>
+      <div class="modal-checks" id="modalChecks"></div>
+    </div>
+    <div class="modal-section">
+      <div class="ms-label">运动内容记录</div>
+      <textarea class="modal-note" id="modalFitnessNote" placeholder="当天运动内容..."></textarea>
+    </div>
+    <div class="modal-section">
+      <div class="ms-label">剪辑课程记录</div>
+      <textarea class="modal-note" id="modalEditNote" placeholder="当天学习内容..."></textarea>
+    </div>
+    <div class="modal-section">
+      <div class="ms-label">阅读心得</div>
+      <textarea class="modal-note" id="modalReadNote" placeholder="当天阅读心得..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn cancel" onclick="closeDayModal()">取消</button>
+      <button class="modal-btn save" onclick="saveDayModal()">保存</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ============ 数据与状态 ============
 const LS_PREFIX = 'cheng_v2_';
@@ -301,10 +422,117 @@ function switchSection(sec) {
   currentSection = sec;
   document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.section === sec));
   document.querySelectorAll('.section').forEach(el => el.classList.toggle('show', el.id === 'sec-' + sec));
-  document.getElementById('pageTitle').textContent = {
-    fitness: '强身健体', edit: '剪辑课程', japanese: '日语听力', meal: '三餐建议', read: '每日阅读'
-  }[sec];
+  const titleMap = {
+    fitness: '强身健体', edit: '剪辑课程', japanese: '日语听力', meal: '三餐建议', read: '每日阅读',
+    summary: '月度汇总'
+  };
+  document.getElementById('pageTitle').textContent = titleMap[sec] || '程佳宁工作台';
   document.querySelector('.main-scroll').scrollTop = 0;
+  if (sec === 'summary') renderSummary();
+}
+
+// ============ 月度汇总 ============
+function renderSummary() {
+  const now = new Date();
+  const year = now.getFullYear(), month = now.getMonth();
+  const keyPrefix = `${year}-${month}-`;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const today = now.getDate();
+  
+  // 统计每个模块的打卡天数
+  const MODULES = [
+    { key: 'fitness', label: '强身健体', icon: '💪' },
+    { key: 'edit', label: '剪辑课程', icon: '🎬' },
+    { key: 'read', label: '每日阅读', icon: '📖' }
+  ];
+  
+  const stats = MODULES.map(m => {
+    let count = 0;
+    for (let d = 1; d <= today; d++) {
+      if (d === today) {
+        if (isTodayChecked(m.key)) count++;
+      } else {
+        if (localStorage.getItem(LS_PREFIX + 'hist_' + m.key + '_' + keyPrefix + d) === '1') count++;
+      }
+    }
+    return { ...m, count, total: today, rate: today > 0 ? Math.round(count / today * 100) : 0 };
+  });
+  
+  // 渲染统计卡片
+  const statsHtml = stats.map(s => `
+    <div class="summary-stat-card">
+      <div class="ss-icon">${s.icon}</div>
+      <div class="ss-num">${s.count}<span style="font-size:14px;color:#9e9a95;">/${s.total}</span></div>
+      <div class="ss-label">${s.label} · 本月完成</div>
+      <div class="ss-rate">
+        完成率 ${s.rate}%
+        <div class="bar"><div class="fill" style="width:${s.rate}%"></div></div>
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('summaryStats').innerHTML = statsHtml;
+  
+  // 渲染热力图
+  const firstDay = new Date(year, month, 1).getDay();
+  let heatmapHtml = '';
+  for (let i = 0; i < firstDay; i++) heatmapHtml += '<div class="heatmap-cell"></div>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    // 统计当天打卡数（0-3）
+    let dayCount = 0;
+    MODULES.forEach(m => {
+      if (d === today) {
+        if (isTodayChecked(m.key)) dayCount++;
+      } else if (d < today) {
+        if (localStorage.getItem(LS_PREFIX + 'hist_' + m.key + '_' + keyPrefix + d) === '1') dayCount++;
+      }
+    });
+    const level = dayCount === 0 ? '' : dayCount === 1 ? 'l1' : dayCount === 2 ? 'l2' : dayCount === 3 ? 'l3' : 'l4';
+    const isToday = d === today;
+    heatmapHtml += `<div class="heatmap-cell ${level} ${isToday ? 'today' : ''}">${d}</div>`;
+  }
+  document.getElementById('heatmapGrid').innerHTML = heatmapHtml;
+  
+  // 渲染最近记录（最近 7 天）
+  const recentHtml = [];
+  for (let i = 0; i < 7; i++) {
+    const d = today - i;
+    if (d < 1) break;
+    const dayKey = keyPrefix + d;
+    const isTodayDay = d === today;
+    
+    const tags = [];
+    MODULES.forEach(m => {
+      let done = false;
+      if (isTodayDay) done = isTodayChecked(m.key);
+      else done = localStorage.getItem(LS_PREFIX + 'hist_' + m.key + '_' + dayKey) === '1';
+      tags.push({ label: m.label, done });
+    });
+    
+    const notes = [];
+    const fn = isTodayDay ? (localStorage.getItem(LS_PREFIX + 'fitnessNote') || '') : (localStorage.getItem(LS_PREFIX + 'hist_fitnessNote_' + dayKey) || '');
+    const en = isTodayDay ? (localStorage.getItem(LS_PREFIX + 'editNote') || '') : (localStorage.getItem(LS_PREFIX + 'hist_editNote_' + dayKey) || '');
+    const rn = isTodayDay ? (localStorage.getItem(LS_PREFIX + 'readNote') || '') : (localStorage.getItem(LS_PREFIX + 'hist_readNote_' + dayKey) || '');
+    if (fn) notes.push(fn.slice(0, 30) + (fn.length > 30 ? '...' : ''));
+    if (en) notes.push(en.slice(0, 30) + (en.length > 30 ? '...' : ''));
+    if (rn) notes.push(rn.slice(0, 30) + (rn.length > 30 ? '...' : ''));
+    
+    const hasAny = tags.some(t => t.done) || notes.length > 0;
+    if (!hasAny) continue;
+    
+    const tagsHtml = tags.map(t => `<span class="tag ${t.done ? 'done' : ''}">${t.done ? '✓' : '○'} ${t.label}</span>`).join('');
+    const notesHtml = notes.length ? `<div style="margin-top:4px;color:#9e9a95;font-size:12px;">${notes.join(' · ')}</div>` : '';
+    
+    recentHtml.push(`
+      <div class="recent-item">
+        <div class="ri-date"><div class="d">${d}</div><div>${month+1}月</div></div>
+        <div class="ri-content">
+          <div class="tags">${tagsHtml}</div>
+          ${notesHtml}
+        </div>
+      </div>
+    `);
+  }
+  document.getElementById('recentList').innerHTML = recentHtml.length ? recentHtml.join('') : '<div style="text-align:center;color:#9e9a95;padding:20px;">暂无记录</div>';
 }
 
 function toggleSidebar() {
@@ -343,14 +571,24 @@ function renderCalendar() {
   document.getElementById('fitnessTotal').textContent = fitnessCount;
   document.getElementById('fitnessStreak').textContent = streak;
   
+  // 计算今天日期数字（用于判断可点击）
+  const todayDate = now.getDate();
+  
   let html = `<div class="cal-title"><span class="month">${year}年 ${monthNames[month]}</span><span class="streak">🔥 本月打卡 ${monthCount} 天</span></div>`;
   html += '<div class="cal-week">';
   ['日','一','二','三','四','五','六'].forEach(w => html += `<div class="weekday">${w}</div>`);
   for (let i = 0; i < firstDay; i++) html += '<div class="cal-day other-month"></div>';
   for (let d = 1; d <= daysInMonth; d++) {
     const hasMark = marks[keyPrefix + d];
-    const isToday = d === now.getDate();
-    html += `<div class="cal-day ${isToday ? 'today' : ''} ${hasMark ? 'has-mark' : ''}">${d}</div>`;
+    const isToday = d === todayDate;
+    const isFuture = d > todayDate;
+    const cls = ['cal-day'];
+    if (isToday) cls.push('today');
+    if (hasMark) cls.push('has-mark');
+    if (isFuture) cls.push('future');
+    else cls.push('clickable');
+    const clickHandler = isFuture ? '' : `onclick="openDayModal(${d})"`;
+    html += `<div class="${cls.join(' ')}" ${clickHandler}>${d}</div>`;
   }
   html += '</div>';
   document.getElementById('calendarCard').innerHTML = html;
@@ -373,6 +611,117 @@ function setTodayChecked(key, checked) {
   if (checked) marks[markKey] = true;
   else delete marks[markKey];
   saveMarks(marks);
+}
+
+// ============ 日期弹窗编辑（查看/修改任意一天） ============
+let modalCurrentDay = null;  // 当前弹窗编辑的日期（数字）
+
+function openDayModal(dayNum) {
+  modalCurrentDay = dayNum;
+  const now = new Date();
+  const year = now.getFullYear(), month = now.getMonth();
+  const weeks = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+  const thatDate = new Date(year, month, dayNum);
+  document.getElementById('modalDate').textContent = `${month+1}月${dayNum}日 ${weeks[thatDate.getDay()]}`;
+  
+  // 读取当天的打卡状态和笔记
+  const dayKey = `${year}-${month}-${dayNum}`;  // 与 markKey 一致
+  
+  // 打卡状态：只读历史打卡状态（基于 markKey），允许切换
+  const checks = [
+    { key: 'fitness', label: '强身健体' },
+    { key: 'edit', label: '剪辑课程' },
+    { key: 'read', label: '每日阅读' }
+  ];
+  // 检查当天打卡状态：如果是今天用 isTodayChecked，否则检查自定义历史记录
+  const isToday = dayNum === now.getDate();
+  const checksContainer = document.getElementById('modalChecks');
+  checksContainer.innerHTML = '';
+  
+  checks.forEach(c => {
+    let checked;
+    if (isToday) {
+      checked = isTodayChecked(c.key);
+    } else {
+      // 历史日期：用单独的历史记录 key
+      checked = localStorage.getItem(LS_PREFIX + 'hist_' + c.key + '_' + dayKey) === '1';
+    }
+    const el = document.createElement('div');
+    el.className = 'modal-check' + (checked ? ' checked' : '');
+    el.textContent = (checked ? '✓ ' : '○ ') + c.label;
+    el.dataset.key = c.key;
+    el.dataset.dayKey = dayKey;
+    el.dataset.isToday = isToday;
+    el.onclick = () => {
+      el.classList.toggle('checked');
+      el.textContent = el.classList.contains('checked') ? '✓ ' + c.label : '○ ' + c.label;
+    };
+    checksContainer.appendChild(el);
+  });
+  
+  // 笔记：当天如果有历史笔记就读出来，否则空
+  document.getElementById('modalFitnessNote').value = localStorage.getItem(LS_PREFIX + 'hist_fitnessNote_' + dayKey) || (isToday ? (localStorage.getItem(LS_PREFIX + 'fitnessNote') || '') : '');
+  document.getElementById('modalEditNote').value = localStorage.getItem(LS_PREFIX + 'hist_editNote_' + dayKey) || (isToday ? (localStorage.getItem(LS_PREFIX + 'editNote') || '') : '');
+  document.getElementById('modalReadNote').value = localStorage.getItem(LS_PREFIX + 'hist_readNote_' + dayKey) || (isToday ? (localStorage.getItem(LS_PREFIX + 'readNote') || '') : '');
+  
+  document.getElementById('dayModal').classList.add('show');
+}
+
+function closeDayModal() {
+  document.getElementById('dayModal').classList.remove('show');
+  modalCurrentDay = null;
+}
+
+function saveDayModal() {
+  if (modalCurrentDay === null) return;
+  const now = new Date();
+  const year = now.getFullYear(), month = now.getMonth();
+  const dayKey = `${year}-${month}-${modalCurrentDay}`;
+  const isToday = modalCurrentDay === now.getDate();
+  
+  // 保存打卡状态
+  document.querySelectorAll('#modalChecks .modal-check').forEach(el => {
+    const key = el.dataset.key;
+    const checked = el.classList.contains('checked');
+    if (isToday) {
+      // 今天：直接调用 setTodayChecked
+      setTodayChecked(key, checked);
+    } else {
+      // 历史日期：保存到 hist_ key
+      localStorage.setItem(LS_PREFIX + 'hist_' + key + '_' + dayKey, checked ? '1' : '0');
+      // 同步更新月历标记
+      const marks = getMarks();
+      // 如果三个打卡任意一个为 true，标记当天有打卡
+      const anyChecked = Array.from(document.querySelectorAll('#modalChecks .modal-check')).some(e => e.classList.contains('checked'));
+      if (anyChecked) marks[dayKey] = true;
+      else delete marks[dayKey];
+      saveMarks(marks);
+    }
+  });
+  
+  // 保存笔记
+  const fn = document.getElementById('modalFitnessNote').value;
+  const en = document.getElementById('modalEditNote').value;
+  const rn = document.getElementById('modalReadNote').value;
+  
+  if (isToday) {
+    // 今天：同步更新主界面的笔记
+    localStorage.setItem(LS_PREFIX + 'fitnessNote', fn);
+    localStorage.setItem(LS_PREFIX + 'editNote', en);
+    localStorage.setItem(LS_PREFIX + 'readNote', rn);
+    document.getElementById('fitnessNote').value = fn;
+    document.getElementById('editNote').value = en;
+    document.getElementById('readNote').value = rn;
+  } else {
+    // 历史日期：保存到 hist_ key
+    localStorage.setItem(LS_PREFIX + 'hist_fitnessNote_' + dayKey, fn);
+    localStorage.setItem(LS_PREFIX + 'hist_editNote_' + dayKey, en);
+    localStorage.setItem(LS_PREFIX + 'hist_readNote_' + dayKey, rn);
+  }
+  
+  closeDayModal();
+  renderCalendar();
+  renderCheckStates();
 }
 
 function toggleCheck(key) {
